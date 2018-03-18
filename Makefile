@@ -51,7 +51,7 @@ SDR_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_widget \
 # feature_quirk_ptest set in flash, which will lead to flash being
 # overwritten with defaults
 AUDIO_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_usbi2s \
-	-DFEATURE_IMAGE_DEFAULT=feature_image_uac1_audio \
+	-DFEATURE_IMAGE_DEFAULT=feature_image_uac2_audio \
 	-DFEATURE_IN_DEFAULT=feature_in_normal \
 	-DFEATURE_OUT_DEFAULT=feature_out_normal \
 	-DFEATURE_ADC_DEFAULT=feature_adc_none \
@@ -59,12 +59,16 @@ AUDIO_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_usbi2s \
 	-DFEATURE_LCD_DEFAULT=feature_lcd_none \
 	-DFEATURE_LOG_DEFAULT=feature_log_none \
 	-DFEATURE_FILTER_DEFAULT=feature_filter_fir \
-	-DFEATURE_QUIRK_DEFAULT=feature_quirk_none \
+	-DFEATURE_QUIRK_DEFAULT=feature_quirk_ptest \
 	-DFEATURE_PRODUCT_AB1x \
 	-DVDD_SENSE \
-	-DUSB_STATE_MACHINE_DEBUG \
 	-DFEATURE_VOLUME_CTRL \
-	-DHW_GEN_AB1X
+	-DHW_GEN_AB1X \
+	-DNBSDAC \
+	-DI2C
+
+#	-DUSB_STATE_MACHINE_DEBUG \
+#	-DFEATURE_QUIRK_DEFAULT=feature_quirk_none \
 
 # Choose wisely:
 #   -DFEATURE_PRODUCT_AMB

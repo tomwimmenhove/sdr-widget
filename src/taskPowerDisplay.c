@@ -33,7 +33,7 @@
 #include "taskMoboCtrl.h"
 #include "Mobo_config.h"
 #include "taskLCD.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 #include "LCD_bargraphs.h"
 #include "features.h"
 

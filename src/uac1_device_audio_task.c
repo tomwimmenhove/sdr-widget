@@ -83,7 +83,7 @@
 #endif
 
 #include "composite_widget.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 
 // To access input select constants
 #include "Mobo_config.h"
@@ -601,6 +601,8 @@ void uac1_device_audio_task(void *pvParameters)
 							}
 	#endif
 
+							//sample_L = sample_R = 0;
+
 							// Only write to spk_buffer_? when allowed
 							if ( (input_select == MOBO_SRC_UAC1) || (input_select == MOBO_SRC_NONE) ) {
 								while (samples_to_transfer_OUT-- > 0) { // Default:1 Skip:0 Insert:2 Apply to 1st stereo sample in packet
@@ -654,7 +656,7 @@ void uac1_device_audio_task(void *pvParameters)
 								mobo_i2s_enable(MOBO_I2S_DISABLE);	// Hard-mute of I2S pin
 							#endif
 
-							// Clear buffers for good measure! That may offload uac1_AK5394A_task() ?? and present a good mute to WM8805
+							// Clear buffers for good measure! That may offload uac1_PCM1792A_task() ?? and present a good mute to WM8805
 							#ifdef USB_STATE_MACHINE_DEBUG
 								print_dbg_char_char('8');
 							#endif

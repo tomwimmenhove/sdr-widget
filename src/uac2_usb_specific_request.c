@@ -87,7 +87,8 @@
 #include "usb_audio.h"
 #include "device_audio_task.h"
 #include "uac2_device_audio_task.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
+#include "PCM1792.h"
 
 //_____ M A C R O S ________________________________________________________
 
@@ -109,6 +110,12 @@ S_freq Mic_freq;
 extern const void *pbuffer;
 extern U16 data_to_transfer;
 
+uint8_t usb_vol_to_pcm1792_atten(S16 n)
+{
+        if (n == VOL_MAX) return 255;
+        if (n == VOL_MIN) return 0;
+        return (n - VOL_MIN) / 128 + 136;
+}
 
 // Send a descriptor to the Host, if needed by means of multiple fillings of EP0
 void send_descriptor(U16 wLength, Bool zlp) {
@@ -253,7 +260,7 @@ void uac2_freq_change_handler() {
 			pdca_disable(PDCA_CHANNEL_SSC_RX);
 #endif
 
-			if (FEATURE_ADC_AK5394A) {
+			if (FEATURE_ADC_PCM1792A) {
 				gpio_set_gpio_pin(AK5394_DFS0); // L H  -> 96khz
 				gpio_clr_gpio_pin(AK5394_DFS1);
 			}
@@ -282,7 +289,7 @@ void uac2_freq_change_handler() {
 			pdca_disable(PDCA_CHANNEL_SSC_RX);
 #endif
 
-			if (FEATURE_ADC_AK5394A) {
+			if (FEATURE_ADC_PCM1792A) {
 				gpio_set_gpio_pin(AK5394_DFS0); // L H  -> 96khz
 				gpio_clr_gpio_pin(AK5394_DFS1);
 			}
@@ -331,7 +338,7 @@ void uac2_freq_change_handler() {
 			pdca_disable(PDCA_CHANNEL_SSC_RX);
 #endif
 
-			if (FEATURE_ADC_AK5394A) {
+			if (FEATURE_ADC_PCM1792A) {
 				gpio_clr_gpio_pin(AK5394_DFS0); // H L -> 192khz
 				gpio_set_gpio_pin(AK5394_DFS1);
 			}
@@ -353,7 +360,7 @@ void uac2_freq_change_handler() {
 			pdca_disable(PDCA_CHANNEL_SSC_RX);
 #endif
 
-			if (FEATURE_ADC_AK5394A) {
+			if (FEATURE_ADC_PCM1792A) {
 				gpio_clr_gpio_pin(AK5394_DFS0); // L H  -> 96khz L L  -> 48khz
 				gpio_clr_gpio_pin(AK5394_DFS1);
 			}
@@ -375,7 +382,7 @@ void uac2_freq_change_handler() {
 			pdca_disable(PDCA_CHANNEL_SSC_RX);
 #endif
 
-			if (FEATURE_ADC_AK5394A) {
+			if (FEATURE_ADC_PCM1792A) {
 				gpio_clr_gpio_pin(AK5394_DFS0); // L H  -> 96khz L L  -> 48khz
 				gpio_clr_gpio_pin(AK5394_DFS1);
 			}
@@ -385,7 +392,7 @@ void uac2_freq_change_handler() {
 			FB_rate_nominal = FB_rate + FB_NOMINAL_OFFSET; // BSB 20131115 Record FB_rate as it was set by control system;
 		}
 
-		if (FEATURE_ADC_AK5394A) {
+		if (FEATURE_ADC_PCM1792A) {
 			#if ((defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)) // Just to be on the safe side
 			#else
 				// re-sync SSC to LRCK
@@ -408,7 +415,7 @@ void uac2_freq_change_handler() {
 				pdca_enable(PDCA_CHANNEL_SSC_RX);
 
 				// Init PDCA channel with the pdca_options.
-				AK5394A_pdca_enable();
+				PCM1792A_pdca_enable();
 			#endif
 		}
 
@@ -1033,8 +1040,7 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 									spk_vol_usb_L = VOL_DEFAULT;
 									// With working volume flash:
 									// spk_vol_usb_L = usb_volume_flash(CH_LEFT, 0, VOL_READ);
-									spk_vol_mult_L = usb_volume_format(
-											spk_vol_usb_L);
+									spk_vol_mult_L = usb_volume_format(spk_vol_usb_L);
 								}
 								Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, spk_vol_usb_L));
 
@@ -1045,7 +1051,6 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 								print_dbg_char_hex(((spk_vol_usb_L >> 0) & 0xff));
 								print_dbg_char('\n');
 #endif
-
 							} else if (wValue_lsb == CH_RIGHT) {
 								// Be on the safe side here, even though fetch is done in uac1_device_audio_task.c init
 								if (spk_vol_usb_R == VOL_INVALID) {
@@ -1053,10 +1058,10 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 									spk_vol_usb_R = VOL_DEFAULT;
 									// With working volume flash:
 									// spk_vol_usb_R = usb_volume_flash(CH_RIGHT, 0, VOL_READ);
-									spk_vol_mult_R = usb_volume_format(
-											spk_vol_usb_R);
+									spk_vol_mult_R = usb_volume_format(spk_vol_usb_R);
 								}
 								Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, spk_vol_usb_R));
+
 							}
 						}
 
@@ -1068,16 +1073,27 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 					}
 
 					// Is (wValue_msb == AUDIO_FU_CONTROL_CS_VOLUME) sane here?
-					if ((wValue_msb == AUDIO_FU_CONTROL_CS_VOLUME) && (request
-							== AUDIO_CS_REQUEST_RANGE)) {
+					//if ((wValue_msb == AUDIO_FU_CONTROL_CS_VOLUME) && (request
+					if ( (wValue_msb == AUDIO_FU_CONTROL_CS_VOLUME) &&
+							(request == AUDIO_CS_REQUEST_RANGE)) {
+						//print_dbg_char_char('C');print_dbg_char_char('S');print_dbg_char_char('R');print_dbg_char_char('Q');
+						//print_dbg_char_char('\r');print_dbg_char_char('\n');
 						Usb_ack_setup_received_free();
 						Usb_reset_endpoint_fifo_access(EP_CONTROL);
 
-						if (wLength == 8) {
+						// XXX: This is a bug! wLength == 0x10!
+						//if (wLength == 8)
+						{
+							//print_dbg_char_char('=');print_dbg_char_char('8');print_dbg_char_char('\r');print_dbg_char_char('\n');
 							Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, VOL_RES));
 							Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, VOL_MIN));
 							Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, VOL_MAX));
 							Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, VOL_RES));
+						}
+						//else
+						{
+							//print_dbg_char_char('!');print_dbg_char_char('8');print_dbg_char_char('\r');print_dbg_char_char('\n');
+							//print_dbg_hex(wLength);print_dbg_char_char('\r');print_dbg_char_char('\n');
 						}
 
 						Usb_ack_control_in_ready_send();
@@ -1279,6 +1295,8 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 						}
 						spk_mute = temp1;
 
+						pcm1792_set_mute(spk_mute ? PCM1792A_MUTE_ENABLED : PCM1792A_MUTE_DISABLED);
+
 						Usb_ack_control_out_received_free();
 						Usb_ack_control_in_ready_send(); //!< send a ZLP for STATUS phase
 						while (!Is_usb_control_in_ready())
@@ -1300,22 +1318,26 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 							if (wValue_lsb == CH_LEFT) {
 								LSB( spk_vol_usb_L) = temp1;
 								MSB( spk_vol_usb_L) = temp2;
-								spk_vol_mult_L = usb_volume_format(
-										spk_vol_usb_L);
+								//spk_vol_mult_L = usb_volume_format(spk_vol_usb_L);
+								uint8_t pcm1792_vol = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
+								pcm1792_set_volume_left(pcm1792_vol);
 
 #ifdef USB_STATE_MACHINE_DEBUG
 								print_dbg_char('s');
 								print_dbg_char('L');
 								print_dbg_char_hex(((spk_vol_usb_L >> 8) & 0xff));
 								print_dbg_char_hex(((spk_vol_usb_L >> 0) & 0xff));
+								print_dbg_char(',');
+								print_dbg_char_hex(pcm1792_vol);
 								print_dbg_char('\n');
 #endif
 
 							} else if (wValue_lsb == CH_RIGHT) {
 								LSB( spk_vol_usb_R) = temp1;
 								MSB( spk_vol_usb_R) = temp2;
-								spk_vol_mult_R = usb_volume_format(
-										spk_vol_usb_R);
+								//spk_vol_mult_R = usb_volume_format(spk_vol_usb_R);
+								uint8_t pcm1792_vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
+								pcm1792_set_volume_right(pcm1792_vol);
 							}
 						}
 
@@ -1325,9 +1347,10 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 							; //!< waits for status phase done
 						return TRUE;
 					}
-
 					else
+					{
 						return FALSE;
+					}
 #endif
 
 				default:

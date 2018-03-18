@@ -28,8 +28,8 @@
 //#include "host_mouse_hid_task.h"
 #endif
 #include "composite_widget.h"
-#include "taskAK5394A.h"
-#include "hpsdr_taskAK5394A.h"
+#include "taskPCM1792A.h"
+#include "hpsdr_taskPCM1792A.h"
 //#include "I2C.h"
 
 /*
@@ -82,7 +82,7 @@ static void x_image_task_init(void) {
   #endif
   vStartTaskMoboCtrl();
   // vStartTaskEXERCISE( tskIDLE_PRIORITY );
-  hpsdr_AK5394A_task_init();
+  hpsdr_PCM1792A_task_init();
   hpsdr_device_audio_task_init(HPSDR_EP_IQ_IN, HPSDR_EP_IQ_OUT, 0);
 #endif
 #if LCD_DISPLAY						// Multi-line LCD display

@@ -178,15 +178,15 @@ to exclude the API function. */
 #define UAC2_configTSK_USB_DAUDIO_PERIOD		1
 #define HPSDR_configTSK_USB_DAUDIO_PERIOD		2
 
-/* AK5394A task definitions. */
-#define configTSK_AK5394A_NAME					((const signed portCHAR *)"AK5394A")
-#define configTSK_AK5394A_STACK_SIZE			256
-#define UAC1_configTSK_AK5394A_PRIORITY			(tskIDLE_PRIORITY + 2)// Was 1
-#define UAC2_configTSK_AK5394A_PRIORITY			(tskIDLE_PRIORITY + 3)// Was +1, then +2
-#define HPSDR_configTSK_AK5394A_PRIORITY		(tskIDLE_PRIORITY + 2)
-#define UAC1_configTSK_AK5394A_PERIOD			50
-#define UAC2_configTSK_AK5394A_PERIOD			50
-#define HPSDR_configTSK_AK5394A_PERIOD			100
+/* PCM1792A task definitions. */
+#define configTSK_PCM1792A_NAME					((const signed portCHAR *)"PCM1792A")
+#define configTSK_PCM1792A_STACK_SIZE			256
+#define UAC1_configTSK_PCM1792A_PRIORITY			(tskIDLE_PRIORITY + 2)// Was 1
+#define UAC2_configTSK_PCM1792A_PRIORITY			(tskIDLE_PRIORITY + 3)// Was +1, then +2
+#define HPSDR_configTSK_PCM1792A_PRIORITY		(tskIDLE_PRIORITY + 2)
+#define UAC1_configTSK_PCM1792A_PERIOD			50
+#define UAC2_configTSK_PCM1792A_PERIOD			50
+#define HPSDR_configTSK_PCM1792A_PERIOD			100
 
 /* USB host Audio HID task definitions. */
 #define configTSK_USB_HAUDIO_NAME             ((const signed portCHAR *)"USB Host Audio")

@@ -87,7 +87,7 @@
 #include "usb_audio.h"
 #include "device_audio_task.h"
 #include "uac1_device_audio_task.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 
 
 //_____ M A C R O S ________________________________________________________
@@ -572,11 +572,13 @@ void audio_get_cur(void) {
 	else if (i_unit==SPK_FEATURE_UNIT_ID) {
 		switch (wValue_msb) {
 			case CS_MUTE:
+				print_dbg_char_char('M');print_dbg_char_char('\r');print_dbg_char_char('\n');
 				if (length == 1) {
 					Usb_write_endpoint_data(EP_CONTROL, 8, spk_mute);
 				}
 				break;
 			case CS_VOLUME:
+				print_dbg_char_char('V');print_dbg_char_char('\r');print_dbg_char_char('\n');
 				if (length == 2) {
 					if (wValue_lsb == CH_LEFT) {
 						// Be on the safe side here, even though fetch is done in uac1_device_audio_task.c init

@@ -84,7 +84,7 @@
 #endif
 
 #include "composite_widget.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 
 // To access input select constants
 #include "Mobo_config.h"
@@ -137,6 +137,7 @@ void uac2_device_audio_task_init(U8 ep_in, U8 ep_out, U8 ep_out_fb)
 				configTSK_USB_DAUDIO_PRIORITY,
 				NULL);
 }
+
 
 
 //!
@@ -374,9 +375,9 @@ void uac2_device_audio_task(void *pvParameters)
 				}
 				else {
 					// HS mode
-					// HS mode, FB rate is 4 bytes in 16.16 format per 125µs.
-					// Internal format is 18.14 samples per 1µs = 16.16 per 250µs
-					// i.e. must right-shift once for 16.16 per 125µs.
+					// HS mode, FB rate is 4 bytes in 16.16 format per 125ï¿½s.
+					// Internal format is 18.14 samples per 1ï¿½s = 16.16 per 250ï¿½s
+					// i.e. must right-shift once for 16.16 per 125ï¿½s.
 					// So for 250us microframes it is same amount of shifting as 10.14 for 1ms frames
 
 
@@ -643,18 +644,21 @@ void uac2_device_audio_task(void *pvParameters)
 	#ifdef FEATURE_VOLUME_CTRL
 						if (spk_vol_mult_L != VOL_MULT_UNITY) {	// Only touch gain-controlled samples
 							// 32-bit data words volume control
-							sample_L = (S32)( (int64_t)( (int64_t)(sample_L) * (int64_t)spk_vol_mult_L ) >> VOL_MULT_SHIFT) ;
+							//sample_L = (S32)( (int64_t)( (int64_t)(sample_L) * (int64_t)spk_vol_mult_L ) >> VOL_MULT_SHIFT) ;
+							// XXX: Now set through hardware. Not doing the calculation here also saves a bunch of time
 							// rand8() too expensive at 192ksps
 							// sample_L += rand8(); // dither in bits 7:0
 						}
 
 						if (spk_vol_mult_R != VOL_MULT_UNITY) {	// Only touch gain-controlled samples
 							// 32-bit data words volume control
-							sample_R = (S32)( (int64_t)( (int64_t)(sample_R) * (int64_t)spk_vol_mult_R ) >> VOL_MULT_SHIFT) ;
+							//sample_R = (S32)( (int64_t)( (int64_t)(sample_R) * (int64_t)spk_vol_mult_R ) >> VOL_MULT_SHIFT) ;
+							// XXX: Now set through hardware. Not doing the calculation here also saves a bunch of time
 							// rand8() too expensive at 192ksps
 							// sample_R += rand8(); // dither in bits 7:0
 						}
 	#endif
+
 
 						// Only write to spk_buffer_? when allowed
 						if ( (input_select == MOBO_SRC_UAC2) || (input_select == MOBO_SRC_NONE) ) {
@@ -924,7 +928,7 @@ void uac2_device_audio_task(void *pvParameters)
 #else
 		if (1) {
 #endif
-			if (usb_buffer_toggle == USB_BUFFER_TOGGLE_LIM)	{	// Counter is increased by DMA and uacX_taskAK5394A.c, decreased by seq. code
+			if (usb_buffer_toggle == USB_BUFFER_TOGGLE_LIM)	{	// Counter is increased by DMA and uacX_taskPCM1792A.c, decreased by seq. code
 				usb_buffer_toggle = USB_BUFFER_TOGGLE_PARK;		// When it reaches limit, stop counting and park this mechanism
 				playerStarted = FALSE;
 

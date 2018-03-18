@@ -35,8 +35,8 @@
 //#include "host_mouse_hid_task.h"
 #endif
 #include "composite_widget.h"
-#include "taskAK5394A.h"
-#include "uac2_taskAK5394A.h"
+#include "taskPCM1792A.h"
+#include "uac2_taskPCM1792A.h"
 //#include "I2C.h"
 
 /*
@@ -51,6 +51,10 @@
 #include "taskPowerDisplay.h"
 #include "taskPushButtonMenu.h"
 #include "wdt.h"
+
+#include "I2C.h"
+//#ifdef I2C
+//#endif
 
 #if LCD_DISPLAY				// Multi-line LCD display
 #include "taskLCD.h"
@@ -93,6 +97,11 @@ static void x_image_init(void) {
 }
 
 static void x_image_task_init(void) {
+	//#if I2C
+		// Create I2C comms semaphore
+		//mutexI2C = xSemaphoreCreateMutex();
+		//twi_init();
+	//#endif
 	// Initialize USB task
 
 #ifdef USB_STATE_MACHINE_DEBUG
@@ -115,7 +124,7 @@ static void x_image_task_init(void) {
 #endif
 	vStartTaskMoboCtrl();
 	// vStartTaskEXERCISE( tskIDLE_PRIORITY );
-	uac2_AK5394A_task_init();
+	uac2_PCM1792A_task_init();
 	device_mouse_hid_task_init(UAC2_EP_HID_RX, UAC2_EP_HID_TX); // Added BSB 20120719
 	uac2_device_audio_task_init(UAC2_EP_AUDIO_IN, UAC2_EP_AUDIO_OUT, UAC2_EP_AUDIO_OUT_FB);
 #endif

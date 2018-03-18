@@ -26,8 +26,8 @@
 //#include "host_mouse_hid_task.h"
 #endif
 #include "composite_widget.h"
-#include "taskAK5394A.h"
-#include "uac1_taskAK5394A.h"
+#include "taskPCM1792A.h"
+#include "uac1_taskPCM1792A.h"
 //#include "I2C.h"
 
 /*
@@ -106,7 +106,7 @@ static void x_image_task_init(void) {
 #endif
   vStartTaskMoboCtrl();
   // vStartTaskEXERCISE( tskIDLE_PRIORITY );
-  uac1_AK5394A_task_init();
+  uac1_PCM1792A_task_init();
   device_mouse_hid_task_init(UAC1_EP_HID_RX, UAC1_EP_HID_TX);
   uac1_device_audio_task_init(UAC1_EP_AUDIO_IN, UAC1_EP_AUDIO_OUT, UAC1_EP_AUDIO_OUT_FB);
 #endif

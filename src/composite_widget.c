@@ -177,7 +177,7 @@
 #include "image.h"
 #include "composite_widget.h"
 #include "Mobo_config.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 #include "cycle_counter.h"
 #include "ssc_i2s.h"
 
@@ -226,7 +226,6 @@ xSemaphoreHandle mutexEP_IN;
 int main(void)
 {
 int i;
-
 	// Avoid burning power in LEDs next to MCU
 	LED_Off(LED0);							// The LEDs on the PCB near the MCU
 	LED_Off(LED1);
@@ -236,11 +235,14 @@ int i;
 	wdt_disable();
 
 	// The reason this is put as early as possible in the code
-	// is that AK5394A has to be put in reset when the clocks are not
+	// is that PCM1792A has to be put in reset when the clocks are not
 	// fully set up.  Otherwise the chip will overheat
-	for (i=0; i< 1000; i++) gpio_clr_gpio_pin(AK5394_RSTN);	// put AK5394A in reset, and use this to delay the start up
+	for (i=0; i< 1000; i++) gpio_clr_gpio_pin(AK5394_RSTN);	// put PCM1792A in reset, and use this to delay the start up
 															// time for various voltages (eg to the XO) to stablize
 															// Not used in QNKTC / Henry Audio hardware
+
+	//print_dbg_char('T');print_dbg_char('0');print_dbg_char('\r');print_dbg_char('\n');
+
 
 	// Set CPU and PBA clock at slow (12MHz) frequency
 	if( PM_FREQ_STATUS_FAIL==pm_configure_clocks(&pm_freq_param_slow) )
@@ -361,7 +363,6 @@ int i;
 	// Initialize usart comm
 	init_dbg_rs232(pm_freq_param.pba_f);
 
-
 	gpio_clr_gpio_pin(AVR32_PIN_PX52);						// Not used in QNKTC / Henry Audio hardware
 
 
@@ -374,8 +375,8 @@ int i;
 	else
 		input_select = MOBO_SRC_UAC2;
 
-//	mobo_xo_select(FREQ_44, input_select);					// Initial GPIO XO control and frequency indication
-	mobo_xo_select(FREQ_INVALID, input_select);				// Initial GPIO XO control and frequency indication
+////	mobo_xo_select(FREQ_44, input_select);					// Initial GPIO XO control and frequency indication
+//	mobo_xo_select(FREQ_INVALID, input_select);				// Initial GPIO XO control and frequency indication
 
 #if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
 	mobo_led_select(FREQ_44, input_select);					// Front RGB LED
@@ -418,13 +419,13 @@ int i;
 
 
 //	if ( FEATURE_BOARD_WIDGET ) {
-//		gpio_clr_gpio_pin(AK5394_RSTN);	// put AK5394A in reset
+//		gpio_clr_gpio_pin(AK5394_RSTN);	// put PCM1792A in reset
 //	}
 
-	if (FEATURE_ADC_AK5394A){
+	if (FEATURE_ADC_PCM1792A){
 		int counter;
-		// Set up AK5394A
-		gpio_clr_gpio_pin(AK5394_RSTN);		// put AK5394A in reset
+		// Set up PCM1792A
+		gpio_clr_gpio_pin(AK5394_RSTN);		// put PCM1792A in reset
 		gpio_clr_gpio_pin(AK5394_DFS0);		// L H -> 96khz   L L  -> 48khz
 		gpio_clr_gpio_pin(AK5394_DFS1);
 		gpio_set_gpio_pin(AK5394_HPFE);		// enable HP filter
@@ -432,7 +433,7 @@ int i;
 		gpio_set_gpio_pin(AK5394_SMODE1);	// SMODE1 = H for Master i2s
 		gpio_set_gpio_pin(AK5394_SMODE2);	// SMODE2 = H for Master/Slave i2s
 
-		gpio_set_gpio_pin(AK5394_RSTN);		// start AK5394A
+		gpio_set_gpio_pin(AK5394_RSTN);		// start PCM1792A
 		counter = 0;
 		while (gpio_get_pin_value(AK5394_CAL) && (counter < COUNTER_TIME_OUT)) counter++;
 		// wait till CAL goes low or time out
@@ -452,6 +453,16 @@ int i;
 
 	// Initialize interrupt controller
 	INTC_init_interrupts();
+
+	#if I2C
+		// Create I2C comms semaphore
+		mutexI2C = xSemaphoreCreateMutex();
+		twi_init();
+	#endif
+
+	//	mobo_xo_select(FREQ_44, input_select);					// Initial GPIO XO control and frequency indication
+	mobo_xo_select(FREQ_INVALID, input_select);				// Initial GPIO XO control and frequency indication
+
 
 	// Initialize usart comm
 // Moved up...	init_dbg_rs232(pm_freq_param.pba_f);

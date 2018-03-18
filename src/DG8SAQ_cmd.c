@@ -28,7 +28,7 @@
 #include "usb_specific_request.h"
 #include "features.h"
 #include "widget.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 
 // This var is used to pass frequency from USB input command
 volatile uint32_t freq_from_usb;		// New Frequency from USB
@@ -195,6 +195,18 @@ uint8_t dg8saqFunctionSetup(uint8_t type, uint16_t wValue, uint16_t wIndex, U8* 
 		break;
 	#endif//LEGACY_PORT_CMD
 	***********************************/
+
+	case 0x0e:
+		/* Reset into Bootloader */
+		flashc_erase_gp_fuse_bit(31, true);
+		flashc_write_gp_fuse_bit(31, true);
+
+		DISABLE_ALL_INTERRUPTS();
+
+		wdt_enable(500000);
+		while (1);				// Wait for it to fire
+		break;
+
 
 	case 0x0f:								// Reboot Widget
 		widget_reset();

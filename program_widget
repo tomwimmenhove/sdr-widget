@@ -10,9 +10,12 @@ case $1 in
     *.elf)
 	hex=/tmp/`basename $1 .elf`.hex
 	objcopy -O ihex $1 $hex && \
+	    (./widget-control -p && sleep 2) ; \
 	    dfu-programmer at32uc3a3256 erase --debug 6  && \
-	    dfu-programmer at32uc3a3256 flash --suppress-bootloader-mem $hex --debug 6 && \
+	    dfu-programmer at32uc3a3256 flash --suppress-bootloader-mem --suppress-validation $hex --debug 6 && \
 	    dfu-programmer at32uc3a3256 reset --debug 4 && \
+	    sleep 1 && \
+	    dfu-programmer at32uc3a3256 reset && \
 	    rm $hex && \
 	    exit 0
 	;;
@@ -26,3 +29,12 @@ case $1 in
 	echo unrecognized file format for programming: $1
 	exit 1
 esac
+
+
+#	    dfu-programmer at32uc3a3256 erase --debug 6  && \
+#	    dfu-programmer at32uc3a3256 flash --suppress-bootloader-mem $hex --debug 6 && \
+#	    dfu-programmer at32uc3a3256 reset --debug 4 && \
+#	    sleep 1 && \
+#	    dfu-programmer at32uc3a3256 reset && \
+#
+rm $hex && \

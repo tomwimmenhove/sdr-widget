@@ -40,7 +40,7 @@
 #include "DG8SAQ_cmd.h"
 #include "freq_and_filters.h"
 #include "device_audio_task.h"
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 
 #if LCD_DISPLAY			// Multi-line LCD display
 #include "taskLCD.h"
@@ -523,9 +523,10 @@ static void mobo_ctrl_factory_reset_handler(void) {
  */
 static void vtaskMoboCtrl( void * pcParameters )
 {
-
 	uint32_t time, ten_s_counter=0;					// Time management
 	uint32_t lastIteration=0, Timerval;				// Counters to keep track of time
+
+	//print_dbg_char('T');print_dbg_char('0');print_dbg_char('\r');print_dbg_char('\n');
 
 #ifdef HW_GEN_DIN20
 	uint8_t usb_ch_counter = 0;						// How many poll periods have passed since a USB change detection?
@@ -582,13 +583,8 @@ static void vtaskMoboCtrl( void * pcParameters )
 	#endif
 	#endif
 
-	// Create I2C comms semaphore
-	mutexI2C = xSemaphoreCreateMutex();
 
- 	// Initialize I2C communications
 	#if I2C
-	twi_init();
-
 	// The Henry Audio and QNKTC series of hardware doesn't scan for i2c devices
 	#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20) || (defined HW_GEN_AB1X)
 	#else

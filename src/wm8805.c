@@ -151,7 +151,7 @@ If this project is of interest to you, please let me know! I hope to see you at 
 #include "Mobo_config.h"
 #include "I2C.h"
 #include "pdca.h" // To disable DMA at sleep
-#include "taskAK5394A.h" // To signal uacX_device_audio_task to enable DMA at init
+#include "taskPCM1792A.h" // To signal uacX_device_audio_task to enable DMA at init
 
 // Global status variable
 volatile wm8805_status_t wm8805_status = {0, 1, 0, 0, FREQ_TIMEOUT, WM8805_PLL_NONE, 1};
@@ -196,7 +196,7 @@ void wm8805_poll(void) {
 	 * + Prevent USB engine from going bonkers when playing on the WM (buffer zeros and send nominal sample rate...)
 	 * + Update USB silence detector timeouts
 	 * + Test UAC2 code and port to UAC1
-	 * - Tasks to be eliminated, particularly uacX_taskAK5394A.c?
+	 * - Tasks to be eliminated, particularly uacX_taskPCM1792A.c?
 	 * + Test code base on legacy hardware
 	 * - Check if WM is really 24 bits
 	 * + Test SPDIF
@@ -525,7 +525,7 @@ void wm8805_init(void) {
 
 	// Enable CPU's processing of produced data
 	// This is needed for the silence detector
-	AK5394A_pdca_rx_enable(FREQ_INVALID);	// Start up without caring about I2S frequency or synchronization
+	PCM1792A_pdca_rx_enable(FREQ_INVALID);	// Start up without caring about I2S frequency or synchronization
 
 //	pdca_enable(PDCA_CHANNEL_SSC_RX);			// Enable I2S reception at MCU's ADC port
 //  pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
@@ -667,7 +667,7 @@ void wm8805_unmute(void) {
 	mobo_led_select(wm8805_status.frequency, input_select);	// User interface channel indicator
 	mobo_clock_division(wm8805_status.frequency);			// Outgoing I2S clock division selector
 
-	AK5394A_pdca_rx_enable(wm8805_status.frequency);		// New code to test for L/R swap
+	PCM1792A_pdca_rx_enable(wm8805_status.frequency);		// New code to test for L/R swap
 
 
 	ADC_buf_USB_IN = -1;							// Force init of MCU's ADC DMA port. Until this point it is NOT detecting zeros..

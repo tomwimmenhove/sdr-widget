@@ -21,8 +21,10 @@
 #include "device_audio_task.h"
 
 // To access DAC_BUFFER_SIZE and clear audio buffer
-#include "taskAK5394A.h"
+#include "taskPCM1792A.h"
 #include "usb_specific_request.h"
+
+#include "SI5351A.h"
 
 /*
 #include "rotary_encoder.h"
@@ -707,7 +709,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 		switch (frequency) {
 			case FREQ_44:
 				if (FEATURE_BOARD_USBI2S)
-					gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					//gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_22MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_clr_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL0);
@@ -715,7 +718,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 			break;
 			case FREQ_48:
 				if (FEATURE_BOARD_USBI2S)
-					gpio_set_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 24.576MHz/2 for AB-1
+					//gpio_set_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 24.576MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_24MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_set_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL0);
@@ -723,7 +727,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 			break;
 			case FREQ_88:
 				if (FEATURE_BOARD_USBI2S)
-					gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					//gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_22MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_clr_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL1);
@@ -731,7 +736,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 			break;
 			case FREQ_96:
 				if (FEATURE_BOARD_USBI2S)
-					gpio_set_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 24.576MHz/2 for AB-1
+					//gpio_set_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 24.576MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_24MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_set_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL1);
@@ -739,7 +745,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 			break;
 			case FREQ_176:
 				if (FEATURE_BOARD_USBI2S)
-					gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					//gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_22MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_clr_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL0);
@@ -747,7 +754,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 			break;
 			case FREQ_192:
 				if (FEATURE_BOARD_USBI2S)
-					gpio_set_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 24.576MHz/2 for AB-1
+					//gpio_set_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 24.576MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_24MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_set_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL0);
@@ -755,7 +763,8 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 			break;
 			default: // same as 44.1
 				if (FEATURE_BOARD_USBI2S)
-					gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					//gpio_clr_gpio_pin(AVR32_PIN_PX16); // BSB 20110301 MUX in 22.5792MHz/2 for AB-1
+					SI5351A_set_regs_preset(SI5351A_22MHZ);
 				else if (FEATURE_BOARD_USBDAC)
 					gpio_clr_gpio_pin(AVR32_PIN_PX51);
 				gpio_clr_gpio_pin(SAMPLEFREQ_VAL0);
@@ -940,7 +949,7 @@ void mobo_clock_division(U32 frequency) {
 
 		pm_gc_enable(&AVR32_PM, AVR32_PM_GCLK_GCLK1);
 
-		AK5394A_pdca_tx_enable(frequency);			// LRCK inversion will occur with FREQ_INVALID
+		PCM1792A_pdca_tx_enable(frequency);			// LRCK inversion will occur with FREQ_INVALID
 
 		prev_frequency = frequency;
 	}

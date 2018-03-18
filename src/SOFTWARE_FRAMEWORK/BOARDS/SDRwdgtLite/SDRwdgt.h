@@ -148,7 +148,7 @@
 //! @}
 
 
-/*! \name AK5394A 24 bit hi-performance ADC
+/*! \name PCM1792A 24 bit hi-performance ADC
  */
 //! @{
 #define AK5394_DFS0                      AVR32_PIN_PB00		// pulled up sampling speed sense (or control)

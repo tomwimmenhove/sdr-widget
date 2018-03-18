@@ -112,6 +112,7 @@ int find_feature_value(int index, char *value) {
 #define REQREC_OTHER			(3 << 0)
 
 #define WIDGET_RESET			0x0f
+#define WIDGET_DFU			0x0e
 
 #define DG8SAQ_VENDOR_ID	  0x16c0		//!  DG8SAQ device
 #define DG8SAQ_PRODUCT_ID     0x05dc
@@ -495,6 +496,12 @@ int reset_widget() {
     return finish(0);
 }
 
+int dfu_widget() {
+	setup();
+	 device_to_host(WIDGET_DFU, 0, 0, 8);
+    return finish(0);
+}
+
 int main(int argc, char *argv[]) {
 	int i;
 	for (i = 1; i < argc; i += 1) {
@@ -532,6 +539,9 @@ int main(int argc, char *argv[]) {
 		}
 		if (strcmp(argv[i], "-r") == 0) { // reboot widget
 			exit(reset_widget());
+		}
+		if (strcmp(argv[i], "-p") == 0) { // DFU
+			exit(dfu_widget());
 		}
 	}
 	fprintf(stderr, usage);
