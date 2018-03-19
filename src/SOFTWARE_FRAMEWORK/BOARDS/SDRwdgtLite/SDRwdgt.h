@@ -142,7 +142,8 @@
 /*! \name GPIO Connections of the SW2 Push Button
  */
 //! @{
-#define GPIO_PUSH_BUTTON_SW2            AVR32_PIN_PB10
+//#define GPIO_PUSH_BUTTON_SW2            AVR32_PIN_PB10
+#define GPIO_PUSH_BUTTON_SW2            AVR32_PIN_PB01
 #define PRG_BUTTON						GPIO_PUSH_BUTTON_SW2
 #define GPIO_PUSH_BUTTON_SW2_PRESSED    0
 //! @}
@@ -151,6 +152,7 @@
 /*! \name PCM1792A 24 bit hi-performance ADC
  */
 //! @{
+#define PCM1792A_RSTN					 AVR32_PIN_PX18
 #define AK5394_DFS0                      AVR32_PIN_PB00		// pulled up sampling speed sense (or control)
 #define AK5394_DFS1                      AVR32_PIN_PB01		// pulled up sampling speed sense (or control)
 #define AK5394_RSTN                      AVR32_PIN_PB03		// pulled up reset sense (or control)

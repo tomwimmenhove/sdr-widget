@@ -700,6 +700,9 @@ static void vtaskMoboCtrl( void * pcParameters )
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
 
+	// HACK. Can't get the fucking widget-control to work.
+	//feature_set_nvram(feature_image_index, feature_image_uac2_audio);
+
 	while (1) {
 		vTaskDelayUntil(&xLastWakeTime, configTSK_MoboCtrl_PERIOD); // This is the delay method used in other tasks.
 
@@ -722,8 +725,6 @@ static void vtaskMoboCtrl( void * pcParameters )
 
 		if (btn_poll_Timerval != btn_poll_lastIteration) {	// Once every 0.5 second, do stuff
 			btn_poll_lastIteration = btn_poll_Timerval;			// Make ready for next iteration
-
-
 
 /*		// FIX: Flash writes creates ticks. Much faster (or interruptable code) is needed!
     		// Has volume setting changed recently? If so store it to flash

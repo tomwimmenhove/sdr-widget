@@ -629,6 +629,18 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 	wLength
 			= usb_format_usb_to_mcu_data(16, Usb_read_endpoint_data(EP_CONTROL, 16));
 
+
+
+
+
+
+	//if (request == AUDIO_CS_REQUEST_RANGE) {
+		//print_dbg_char('S');print_dbg_char('0');print_dbg_char('\r');print_dbg_char('\n');
+	//}
+	//print_dbg_char('S');print_dbg_hex(request);print_dbg_char('\r');print_dbg_char('\n');
+
+
+
 	// BSB 20120720 copy from uac1_usb_specific_request begin
 
 	// It may look like the  OS is pulling the RX endpoint...
@@ -899,6 +911,7 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 
 						Usb_reset_endpoint_fifo_access(EP_CONTROL);
 
+						print_dbg_char('S');print_dbg_char('1');print_dbg_char('\r');print_dbg_char('\n');
 						data_to_transfer = sizeof(Speedx);
 						pbuffer = (const U8*)Speedx;
 						send_descriptor(wLength, FALSE); // Send the descriptor. pbuffer and data_to_transfer are global variables which must be set up by code
@@ -961,6 +974,7 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 						Usb_ack_setup_received_free();
 						Usb_reset_endpoint_fifo_access(EP_CONTROL);
 
+						print_dbg_char('S');print_dbg_char('2');print_dbg_char('\r');print_dbg_char('\n');
 						data_to_transfer = sizeof(Speedx);
 						pbuffer = (const U8*)Speedx;
 						send_descriptor(wLength, FALSE); // Send the descriptor. pbuffer and data_to_transfer are global variables which must be set up by code

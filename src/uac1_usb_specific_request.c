@@ -786,6 +786,9 @@ Bool uac1_user_read_request(U8 type, U8 request)
 	wIndex = usb_format_usb_to_mcu_data(16, Usb_read_endpoint_data(EP_CONTROL, 16));
 	wLength = usb_format_usb_to_mcu_data(16, Usb_read_endpoint_data(EP_CONTROL, 16));
 
+
+	//print_dbg_char('T');print_dbg_hex(request);print_dbg_char('\r');print_dbg_char('\n');
+
 	//** Specific request from Class HID
 	// this should vector to specified interface handler
 	if( wIndex == DSC_INTERFACE_HID )   // Interface number of HID
