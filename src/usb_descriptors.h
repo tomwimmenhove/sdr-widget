@@ -173,6 +173,13 @@
     #define AUDIO_VENDOR_ID       0x16d0	//!  AMB	VID
     #define AUDIO_PRODUCT_ID_13   0x098b	//!  AMB	UAC1 PID
     #define AUDIO_PRODUCT_ID_14   0x098c	//!  AMB	UAC2 PID
+  #elif defined (FEATURE_PRODUCT_NBSDAC) // NBS-DAC-192/24
+//    #define AUDIO_VENDOR_ID       0x1642	//!  TWE	VID
+//    #define AUDIO_PRODUCT_ID_15   0x0042	//!  TWE	UAC1 PID
+//    #define AUDIO_PRODUCT_ID_16   0x0043	//!  TWE	UAC2 PID
+    #define AUDIO_VENDOR_ID       0x16d0	//!  AB-1.x	VID
+    #define AUDIO_PRODUCT_ID_15   0x075c	//!  AB-1.x	UAC1 PID
+    #define AUDIO_PRODUCT_ID_16   0x075d	//!  AB-1.x	UAC2 PID
   #else
     #error No recognized FEATURE_PRODUCT... is defined in Makefile, aborting.
   #endif
@@ -246,10 +253,18 @@
   Usb_unicode('b'), Usb_unicode('o'), Usb_unicode('r'), Usb_unicode('a'), Usb_unicode('t'), Usb_unicode('o'), \
   Usb_unicode('r'), Usb_unicode('i'), Usb_unicode('e'), Usb_unicode('s')\
 }
+#elif defined (FEATURE_PRODUCT_NBSDAC) // NBS-DAC-192/24
+#define USB_MN_LENGTH         26
+#define USB_MANUFACTURER_NAME {\
+  Usb_unicode('T'), Usb_unicode('o'), Usb_unicode('m'), Usb_unicode(' '), Usb_unicode('W'), Usb_unicode('i'), \
+  Usb_unicode('m'), Usb_unicode('m'), Usb_unicode('e'), Usb_unicode('n'), Usb_unicode('h'), Usb_unicode('o'), \
+  Usb_unicode('v'), Usb_unicode('e'), Usb_unicode(' '), Usb_unicode('E'), Usb_unicode('l'), Usb_unicode('e'), \
+  Usb_unicode('c'), Usb_unicode('t'), Usb_unicode('r'), Usb_unicode('o'), Usb_unicode('n'), Usb_unicode('i'), \
+  Usb_unicode('c'), Usb_unicode('c')\
+}
 #else
 #error No recognized FEATURE_PRODUCT... is defined in Makefile, aborting.
 #endif
-
 
 // BSB 20120928 new VID/PID system
 #if defined (FEATURE_PRODUCT_SDR_WIDGET) // AUDIO_PRODUCT_ID_1 and _2
@@ -309,6 +324,13 @@
       Usb_unicode('A'), Usb_unicode('u'), Usb_unicode('d'), Usb_unicode('i'), Usb_unicode('o'), Usb_unicode('-'), \
       Usb_unicode('W'), Usb_unicode('i'), Usb_unicode('d'), Usb_unicode('g'), Usb_unicode('e'), Usb_unicode('t')\
     }
+#elif defined (FEATURE_PRODUCT_NBSDAC) // NBS-DAC-192/24
+    #define USB_PN_LENGTH         14
+    #define USB_PRODUCT_NAME {\
+	  Usb_unicode('N'), Usb_unicode('B'), Usb_unicode('S'), Usb_unicode('-'), Usb_unicode('D'), Usb_unicode('A'), \
+	  Usb_unicode('C'), Usb_unicode('-'), Usb_unicode('1'), Usb_unicode('9'), Usb_unicode('2'), Usb_unicode('/'), \
+	  Usb_unicode('2'), Usb_unicode('4')\
+	}
 #else
 #error No recognized FEATURE_PRODUCT... is defined in Makefile, aborting.
 #endif
@@ -446,21 +468,15 @@
 */
 
 
-#define USB_AIT_LENGTH         12
+#define USB_AIT_LENGTH         6
 #define USB_AIT \
 {\
-  Usb_unicode('A'),\
-  Usb_unicode('u'),\
-  Usb_unicode('d'),\
-  Usb_unicode('i'),\
-  Usb_unicode('o'),\
-  Usb_unicode('-'),\
-  Usb_unicode('w'),\
-  Usb_unicode('i'),\
-  Usb_unicode('d'),\
-  Usb_unicode('g'),\
+  Usb_unicode('M'),\
+  Usb_unicode('a'),\
+  Usb_unicode('s'),\
+  Usb_unicode('t'),\
   Usb_unicode('e'),\
-  Usb_unicode('t')\
+  Usb_unicode('r'),\
 }
 #define USB_AOT_LENGTH         13
 #define USB_AOT \
