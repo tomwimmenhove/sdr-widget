@@ -253,18 +253,6 @@ void uac2_freq_change_handler() {
 			print_dbg_char('4'); // BSB debug 20121212
 #endif
 
-#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
-			// Avoid when using SSC_RX for SPDIF buffering?
-#else
-			pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-			pdca_disable(PDCA_CHANNEL_SSC_RX);
-#endif
-
-			if (FEATURE_ADC_PCM1792A) {
-				gpio_set_gpio_pin(AK5394_DFS0); // L H  -> 96khz
-				gpio_clr_gpio_pin(AK5394_DFS1);
-			}
-
 			/*
 			 if (FEATURE_LINUX_QUIRK_ON)
 			 FB_rate = (96) << 15;
@@ -282,17 +270,6 @@ void uac2_freq_change_handler() {
 			print_dbg_char('3'); // BSB debug 20121212
 #endif
 
-#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
-			// Avoid when using SSC_RX for SPDIF buffering?
-#else
-			pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-			pdca_disable(PDCA_CHANNEL_SSC_RX);
-#endif
-
-			if (FEATURE_ADC_PCM1792A) {
-				gpio_set_gpio_pin(AK5394_DFS0); // L H  -> 96khz
-				gpio_clr_gpio_pin(AK5394_DFS1);
-			}
 
 			/*
 			 if (FEATURE_LINUX_QUIRK_ON)
@@ -311,16 +288,6 @@ void uac2_freq_change_handler() {
 			print_dbg_char('5'); // BSB debug 20121212
 #endif
 
-#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
-			// Avoid when using SSC_RX for SPDIF buffering?
-#else
-			pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-			pdca_disable(PDCA_CHANNEL_SSC_RX);
-#endif
-
-			gpio_clr_gpio_pin(AK5394_DFS0); // H L -> 192khz
-			gpio_set_gpio_pin(AK5394_DFS1);
-
 			FB_rate = (176 << 14) + ((1 << 14) * 4) / 10;
 			FB_rate_initial = FB_rate; // BSB 20131031 Record FB_rate as it was set by control system
 			FB_rate_nominal = FB_rate + FB_NOMINAL_OFFSET; // BSB 20131115 Record FB_rate as it was set by control system;
@@ -331,17 +298,6 @@ void uac2_freq_change_handler() {
 			print_dbg_char('6'); // BSB debug 20121212
 #endif
 
-#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
-			// Avoid when using SSC_RX for SPDIF buffering?
-#else
-			pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-			pdca_disable(PDCA_CHANNEL_SSC_RX);
-#endif
-
-			if (FEATURE_ADC_PCM1792A) {
-				gpio_clr_gpio_pin(AK5394_DFS0); // H L -> 192khz
-				gpio_set_gpio_pin(AK5394_DFS1);
-			}
 
 			FB_rate = (192) << 14;
 			FB_rate_initial = FB_rate; // BSB 20131031 Record FB_rate as it was set by control system
@@ -353,17 +309,6 @@ void uac2_freq_change_handler() {
 			print_dbg_char('2'); // BSB debug 20121212
 #endif
 
-#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
-			// Avoid when using SSC_RX for SPDIF buffering?
-#else
-			pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-			pdca_disable(PDCA_CHANNEL_SSC_RX);
-#endif
-
-			if (FEATURE_ADC_PCM1792A) {
-				gpio_clr_gpio_pin(AK5394_DFS0); // L H  -> 96khz L L  -> 48khz
-				gpio_clr_gpio_pin(AK5394_DFS1);
-			}
 
 			FB_rate = (48) << 14;
 			FB_rate_initial = FB_rate; // BSB 20131031 Record FB_rate as it was set by control system
@@ -375,48 +320,9 @@ void uac2_freq_change_handler() {
 			print_dbg_char('1'); // BSB debug 20121212
 #endif
 
-#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
-			// Avoid when using SSC_RX for SPDIF buffering?
-#else
-			pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-			pdca_disable(PDCA_CHANNEL_SSC_RX);
-#endif
-
-			if (FEATURE_ADC_PCM1792A) {
-				gpio_clr_gpio_pin(AK5394_DFS0); // L H  -> 96khz L L  -> 48khz
-				gpio_clr_gpio_pin(AK5394_DFS1);
-			}
-
 			FB_rate = (44 << 14) + (1 << 14) / 10;
 			FB_rate_initial = FB_rate; // BSB 20131031 Record FB_rate as it was set by control system
 			FB_rate_nominal = FB_rate + FB_NOMINAL_OFFSET; // BSB 20131115 Record FB_rate as it was set by control system;
-		}
-
-		if (FEATURE_ADC_PCM1792A) {
-			#if ((defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)) // Just to be on the safe side
-			#else
-				// re-sync SSC to LRCK
-				// Wait for the next frame synchronization event
-				// to avoid channel inversion.  Start with left channel - FS goes low
-				// However, the channels are reversed at 192khz
-
-				if (current_freq.frequency == 192000) {
-					while (gpio_get_pin_value(AK5394_LRCK))
-						;
-					while (!gpio_get_pin_value(AK5394_LRCK))
-						; // exit when FS goes high
-				} else {
-					while (!gpio_get_pin_value(AK5394_LRCK))
-						;
-					while (gpio_get_pin_value(AK5394_LRCK))
-						; // exit when FS goes low
-				}
-				// Enable now the transfer.
-				pdca_enable(PDCA_CHANNEL_SSC_RX);
-
-				// Init PDCA channel with the pdca_options.
-				PCM1792A_pdca_enable();
-			#endif
 		}
 
 		spk_mute = FALSE;
@@ -425,8 +331,8 @@ void uac2_freq_change_handler() {
 	}
 }
 
-//! @brief This function configures the endpoints of the device application.
 //! This function is called when the set configuration request has been received.
+//! @brief This function configures the endpoints of the device application.
 //!
 void uac2_user_endpoint_init(U8 conf_nb) {
 	if (Is_usb_full_speed_mode()) {

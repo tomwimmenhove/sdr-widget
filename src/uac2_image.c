@@ -36,7 +36,6 @@
 #endif
 #include "composite_widget.h"
 #include "taskPCM1792A.h"
-#include "uac2_taskPCM1792A.h"
 //#include "I2C.h"
 
 /*
@@ -124,7 +123,7 @@ static void x_image_task_init(void) {
 #endif
 	vStartTaskMoboCtrl();
 	// vStartTaskEXERCISE( tskIDLE_PRIORITY );
-	uac2_PCM1792A_task_init();
+	PCM1792A_task_init(FALSE);
 	device_mouse_hid_task_init(UAC2_EP_HID_RX, UAC2_EP_HID_TX); // Added BSB 20120719
 	uac2_device_audio_task_init(UAC2_EP_AUDIO_IN, UAC2_EP_AUDIO_OUT, UAC2_EP_AUDIO_OUT_FB);
 #endif

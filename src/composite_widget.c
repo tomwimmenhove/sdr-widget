@@ -225,7 +225,6 @@ xSemaphoreHandle mutexEP_IN;
  */
 int main(void)
 {
-int i;
 	// Avoid burning power in LEDs next to MCU
 	LED_Off(LED0);							// The LEDs on the PCB near the MCU
 	LED_Off(LED1);
@@ -407,7 +406,7 @@ int i;
 	// Initialize widget management
 	widget_init();
 
-	if (FEATURE_ADC_PCM1792A){
+	if (FEATURE_DAC_PCM1792A){
 		// Reset PCM1792A
 		gpio_clr_gpio_pin(PCM1792A_RSTN);		// put PCM1792A in reset
 		gpio_set_gpio_pin(PCM1792A_RSTN);		// start PCM1792A

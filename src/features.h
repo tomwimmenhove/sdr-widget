@@ -99,7 +99,7 @@ typedef enum {
 	feature_out_swapped,
 	feature_end_out,
 	feature_adc_none,			// adc
-	feature_adc_PCM1792A,
+	feature_dac_PCM1792A,
 	feature_end_adc,
 	feature_dac_none,			// dac
 	feature_dac_cs4344,
@@ -207,8 +207,8 @@ extern const features_t features_default;
 #define FEATURE_OUT_SWAPPED				(features[feature_out_index] == (uint8_t)feature_out_swapped)
 
 #define FEATURE_ADC_NONE				(features[feature_adc_index] == (uint8_t)feature_adc_none)
-#define FEATURE_ADC_PCM1792A				(features[feature_adc_index] == (uint8_t)feature_adc_PCM1792A)
 
+#define FEATURE_DAC_PCM1792A			(features[feature_adc_index] == (uint8_t)feature_dac_PCM1792A)
 #define FEATURE_DAC_NONE				(features[feature_dac_index] == (uint8_t)feature_dac_none)
 #define FEATURE_DAC_CS4344				(features[feature_dac_index] == (uint8_t)feature_dac_cs4344)
 #define FEATURE_DAC_GENERIC				(features[feature_dac_index] == (uint8_t)feature_dac_generic)

@@ -23,7 +23,6 @@ C_SRCS += \
 ../src/freq_and_filters.c \
 ../src/host_audio_task.c \
 ../src/hpsdr_device_audio_task.c \
-../src/hpsdr_taskPCM1792A.c \
 ../src/hpsdr_usb_descriptors.c \
 ../src/hpsdr_usb_specific_request.c \
 ../src/image.c \
@@ -37,12 +36,10 @@ C_SRCS += \
 ../src/taskStartupLogDisplay.c \
 ../src/uac1_device_audio_task.c \
 ../src/uac1_image.c \
-../src/uac1_taskPCM1792A.c \
 ../src/uac1_usb_descriptors.c \
 ../src/uac1_usb_specific_request.c \
 ../src/uac2_device_audio_task.c \
 ../src/uac2_image.c \
-../src/uac2_taskPCM1792A.c \
 ../src/uac2_usb_descriptors.c \
 ../src/uac2_usb_specific_request.c \
 ../src/usb_descriptors.c \
@@ -71,7 +68,6 @@ OBJS += \
 ./src/freq_and_filters.o \
 ./src/host_audio_task.o \
 ./src/hpsdr_device_audio_task.o \
-./src/hpsdr_taskPCM1792A.o \
 ./src/hpsdr_usb_descriptors.o \
 ./src/hpsdr_usb_specific_request.o \
 ./src/image.o \
@@ -85,12 +81,10 @@ OBJS += \
 ./src/taskStartupLogDisplay.o \
 ./src/uac1_device_audio_task.o \
 ./src/uac1_image.o \
-./src/uac1_taskPCM1792A.o \
 ./src/uac1_usb_descriptors.o \
 ./src/uac1_usb_specific_request.o \
 ./src/uac2_device_audio_task.o \
 ./src/uac2_image.o \
-./src/uac2_taskPCM1792A.o \
 ./src/uac2_usb_descriptors.o \
 ./src/uac2_usb_specific_request.o \
 ./src/usb_descriptors.o \
@@ -120,7 +114,6 @@ C_DEPS += \
 ./src/freq_and_filters.d \
 ./src/host_audio_task.d \
 ./src/hpsdr_device_audio_task.d \
-./src/hpsdr_taskPCM1792A.d \
 ./src/hpsdr_usb_descriptors.d \
 ./src/hpsdr_usb_specific_request.d \
 ./src/image.d \
@@ -134,12 +127,10 @@ C_DEPS += \
 ./src/taskStartupLogDisplay.d \
 ./src/uac1_device_audio_task.d \
 ./src/uac1_image.d \
-./src/uac1_taskPCM1792A.d \
 ./src/uac1_usb_descriptors.d \
 ./src/uac1_usb_specific_request.d \
 ./src/uac2_device_audio_task.d \
 ./src/uac2_image.d \
-/src/uac2_taskPCM1792A.d \
 ./src/uac2_usb_descriptors.d \
 ./src/uac2_usb_specific_request.d \
 ./src/usb_descriptors.d \

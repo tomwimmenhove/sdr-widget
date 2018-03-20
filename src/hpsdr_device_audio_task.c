@@ -84,7 +84,6 @@
 //#include "taskEXERCISE.h"
 #include "composite_widget.h"
 #include "taskPCM1792A.h"
-#include "hpsdr_taskPCM1792A.h"
 
 //_____ M A C R O S ________________________________________________________
 

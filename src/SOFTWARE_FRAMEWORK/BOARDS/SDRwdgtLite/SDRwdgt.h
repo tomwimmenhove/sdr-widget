@@ -153,22 +153,6 @@
  */
 //! @{
 #define PCM1792A_RSTN					 AVR32_PIN_PX18
-#define AK5394_DFS0                      AVR32_PIN_PB00		// pulled up sampling speed sense (or control)
-#define AK5394_DFS1                      AVR32_PIN_PB01		// pulled up sampling speed sense (or control)
-#define AK5394_RSTN                      AVR32_PIN_PB03		// pulled up reset sense (or control)
-#define AK5394_HPFE                      AVR32_PIN_PB04		// pulled up High Pass Filter sense (or control)
-#define AK5394_ZCAL                      AVR32_PIN_PB05		// Zero Calibration Control to A/D
-#define AK5394_CAL                       AVR32_PIN_PB06		// Calibration Active from A/D
-#define AK5394_SMODE1                    AVR32_PIN_PB07		// pulled up mode sense (or control)
-#define AK5394_SMODE2                    AVR32_PIN_PB08		// pulled up mode sense (or control)
-
-// NOTE:: need to work on these pin assignments
-#define AK5394_FSYNC                     AVR32_PIN_PX26		// with Jumper 1-2 in J302
-#define AK5394_LRCK                      AVR32_PIN_PX36		// with Jumper 3-4 in J302
-#define AK5394_LRCK_IN                   AVR32_PIN_PX26		// with Jumper 2-3 in J302
-#define AK5394_SDATA                     AVR32_PIN_PX25
-#define AK5394_SCLK                      AVR32_PIN_PX28		// trace on board to PX34  ??
-#define AK5394_AD_MCLK                   AVR32_PIN_PC04		// clock from A/D board
 
 /* Important note on PC04: This is the XIN1 pin of the AVR32. According to Atmel's doc32072.pdf page 12:
  * The oscillators are not mapped to the normal GPIO functions and their muxings are controlled

@@ -207,57 +207,6 @@ static void pdca_set_irq(void) {
 	Enable_global_interrupt();
 }
 
-void PCM1792A_pdca_disable(void) {
-}
-
-// The old pdca_enable() code which will remain.
-void PCM1792A_pdca_enable(void) {
-	pdca_init_channel(PDCA_CHANNEL_SSC_RX, &PDCA_OPTIONS); // init PDCA channel with options.
-	pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-}
-
-
-// Turn on the RX pdca, run after ssc_i2s_init() This is the new, speculative version to try to prevent L/R swap
-// FIX: Build some safety mechanism into the while loop to prevent lock-up!
-void PCM1792A_pdca_rx_enable(U32 frequency) {
-	U16 countdown = 0xFFFF;
-
-//	gpio_set_gpio_pin(AVR32_PIN_PX43); // ch6 p88
-
-	pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-	mobo_clear_adc_channel();
-
-   	taskENTER_CRITICAL();
-
-	if ( (frequency == FREQ_44) || (frequency == FREQ_48) ||
-		 (frequency == FREQ_88) || (frequency == FREQ_96) ||
-		 (frequency == FREQ_176) || (frequency == FREQ_192) ){
-		while ( (gpio_get_pin_value(AK5394_LRCK) == 0) && (countdown != 0) ) countdown--;
-		while ( (gpio_get_pin_value(AK5394_LRCK) == 1) && (countdown != 0) ) countdown--;
-		while ( (gpio_get_pin_value(AK5394_LRCK) == 0) && (countdown != 0) ) countdown--;
-		while ( (gpio_get_pin_value(AK5394_LRCK) == 1) && (countdown != 0) ) countdown--;
-		pdca_init_channel(PDCA_CHANNEL_SSC_RX, &PDCA_OPTIONS);
-		ADC_buf_DMA_write = 0;
-
-		//   	gpio_clr_gpio_pin(AVR32_PIN_PX17);
-	}
-	else {	// No known frequency, don't halt system while polling for LRCK edge
-		pdca_init_channel(PDCA_CHANNEL_SSC_RX, &PDCA_OPTIONS);
-		ADC_buf_DMA_write = 0;
-
-		//   	gpio_clr_gpio_pin(AVR32_PIN_PX17);
-	}
-
-	// What is the optimal sequence? These two are simple write operations
-   	pdca_enable(PDCA_CHANNEL_SSC_RX);
-	pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-
-	taskEXIT_CRITICAL();
-
-//	gpio_clr_gpio_pin(AVR32_PIN_PX43); // ch6 p88
-}
-
-
 // Turn on the TX pdca, run after ssc_i2s_init()
 // FIX: Build some safety mechanism into the while loop to prevent lock-up!
 void PCM1792A_pdca_tx_enable(U32 frequency) {

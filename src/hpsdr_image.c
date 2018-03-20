@@ -82,7 +82,7 @@ static void x_image_task_init(void) {
   #endif
   vStartTaskMoboCtrl();
   // vStartTaskEXERCISE( tskIDLE_PRIORITY );
-  hpsdr_PCM1792A_task_init();
+  PCM1792A_task_init(TRUE);
   hpsdr_device_audio_task_init(HPSDR_EP_IQ_IN, HPSDR_EP_IQ_OUT, 0);
 #endif
 #if LCD_DISPLAY						// Multi-line LCD display
