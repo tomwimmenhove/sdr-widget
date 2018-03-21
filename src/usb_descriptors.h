@@ -260,7 +260,7 @@
   Usb_unicode('m'), Usb_unicode('m'), Usb_unicode('e'), Usb_unicode('n'), Usb_unicode('h'), Usb_unicode('o'), \
   Usb_unicode('v'), Usb_unicode('e'), Usb_unicode(' '), Usb_unicode('E'), Usb_unicode('l'), Usb_unicode('e'), \
   Usb_unicode('c'), Usb_unicode('t'), Usb_unicode('r'), Usb_unicode('o'), Usb_unicode('n'), Usb_unicode('i'), \
-  Usb_unicode('c'), Usb_unicode('c')\
+  Usb_unicode('c'), Usb_unicode('s')\
 }
 #else
 #error No recognized FEATURE_PRODUCT... is defined in Makefile, aborting.
