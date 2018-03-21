@@ -156,7 +156,7 @@ void device_mouse_hid_task_init(U8 ep_rx, U8 ep_tx)
 #endif  // FREERTOS_USED
 
 	// Added BSB 20120718
-	print_dbg("\nHID ready\n"); // usart is ready to receive HID commands!
+	print_dbg("HID ready\r\n"); // usart is ready to receive HID commands!
 
 	// Added BSB 20120719
 #if LCD_DISPLAY

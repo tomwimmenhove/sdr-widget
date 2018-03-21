@@ -218,7 +218,6 @@ xSemaphoreHandle mutexEP_IN;
  };
 
 
-
 /*! \brief Main function. Execution starts here.
  *
  * \retval 42 Fatal error.
@@ -351,6 +350,8 @@ int main(void)
 
 	// Initialize usart comm
 	init_dbg_rs232(pm_freq_param.pba_f);
+	print_dbg("Tom Wimmenhove Electronics NBS-DAC-192/24\r\n");
+	print_dbg("UART Initialized\r\n");
 
 	gpio_clr_gpio_pin(AVR32_PIN_PX52);						// Not used in QNKTC / Henry Audio hardware
 
@@ -359,10 +360,17 @@ int main(void)
 // It is very important to enable some sort of MCLK to the CPU, USB MCLK is the most reliable
 // FIX: NVRAM should store preferred source and resort to it on boot-up!
 
+	print_dbg("Feature image: ");
 	if (feature_get_nvram(feature_image_index) == feature_image_uac1_audio)
+	{
 		input_select = MOBO_SRC_UAC1;
+		print_dbg("UAC1\r\n");
+	}
 	else
+	{
 		input_select = MOBO_SRC_UAC2;
+		print_dbg("UAC2\r\n");
+	}
 
 ////	mobo_xo_select(FREQ_44, input_select);					// Initial GPIO XO control and frequency indication
 //	mobo_xo_select(FREQ_INVALID, input_select);				// Initial GPIO XO control and frequency indication
@@ -393,6 +401,7 @@ int main(void)
 	}
 #endif
 
+	print_dbg("Initializing RTC\r\n");
 	// Initialize Real Time Counter
 	rtc_init(&AVR32_RTC, RTC_OSC_RC, 0);	// RC clock at 115kHz
 	rtc_disable_interrupt(&AVR32_RTC);
@@ -401,16 +410,12 @@ int main(void)
 
 
 	// Initialize features management
+	print_dbg("Initializing features\r\n");
 	features_init();
 
 	// Initialize widget management
+	print_dbg("Initializing widget\r\n");
 	widget_init();
-
-	if (FEATURE_DAC_PCM1792A){
-		// Reset PCM1792A
-		gpio_clr_gpio_pin(PCM1792A_RSTN);		// put PCM1792A in reset
-		gpio_set_gpio_pin(PCM1792A_RSTN);		// start PCM1792A
-	}
 
 	gpio_enable_pin_pull_up(GPIO_PTT_INPUT);
 
@@ -423,6 +428,7 @@ int main(void)
 	else gpio_set_gpio_pin(GPIO_PCM5102_FILTER);
 
 	// Initialize interrupt controller
+	print_dbg("Initializing interrupts\r\n");
 	INTC_init_interrupts();
 
 	#if I2C
@@ -439,18 +445,23 @@ int main(void)
 // Moved up...	init_dbg_rs232(pm_freq_param.pba_f);
 
 	// Initialize USB clock (on PLL1)
+	print_dbg("Configuring USB Clock\r\n");
 	pm_configure_usb_clock();
 
 	// boot the image
+	print_dbg("Booting image\r\n");
 	image_boot();
 
 	// initialize the image
+	print_dbg("Initializing image\r\n");
 	image_init();
 
 	// Start the image tasks
+	print_dbg("Initializing image task\r\n");
 	image_task_init();
 
 	// Start OS scheduler
+	print_dbg("Starting OS Scheduler\r\n");
 	vTaskStartScheduler();
 	portDBG_TRACE("FreeRTOS returned.");
 	return 42;

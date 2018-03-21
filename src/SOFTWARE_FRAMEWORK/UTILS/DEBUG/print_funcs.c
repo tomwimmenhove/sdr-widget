@@ -72,7 +72,7 @@
  * See http://code.google.com/p/sdr-widget/
  *
  */
-
+#include <stdio.h>
 #include "compiler.h"
 #include "gpio.h"
 #include "usart.h"
@@ -352,3 +352,17 @@ void print_hex(volatile avr32_usart_t *usart, unsigned long n)
   // Transmit the resulting string with the given USART.
   print(usart, tmp);
 }
+
+ssize_t _write(int fd, const void *buf, size_t count)
+{
+	char* p = (char*) buf;
+	size_t ret = count;
+
+	while (count--)
+	{
+		print_dbg_char((int) (*p++));
+	}
+
+	return ret;
+}
+

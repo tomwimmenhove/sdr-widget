@@ -773,20 +773,25 @@ static void vtaskMoboCtrl( void * pcParameters )
 				#error undefined hardware
 				#endif
 
+				printf("PROG Button pressed for %d iterations\r\n", btn_poll_temp + 1);
+
 				if (btn_poll_temp > 2)  // If button pressed during at least 2 consecutive 2Hz polls...
     			{
+					print_dbg("Changed feature image to ");
 					// Perform feature swap between UAC1 audio and UAC2 audio
 					if (feature_get_nvram(feature_image_index) == feature_image_uac1_audio)
 					{
 						feature_set_nvram(feature_image_index, feature_image_uac2_audio);
 						if (feature_get_nvram(feature_image_index) == feature_image_uac2_audio)
 							btn_poll_temp = 100;	// Ready reset after change and Prog release
+						print_dbg("UAC2\r\n");
 					}
 					else if (feature_get_nvram(feature_image_index) == feature_image_uac2_audio)
 					{
 						feature_set_nvram(feature_image_index, feature_image_uac1_audio);
 						if (feature_get_nvram(feature_image_index) == feature_image_uac1_audio)
 							btn_poll_temp = 100;	// Ready reset after change and Prog release
+						print_dbg("UAC1\r\n");
 					}
 
 					if (btn_poll_temp == 100) {

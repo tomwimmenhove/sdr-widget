@@ -11,6 +11,7 @@
 
 // To compile sample rate detector we need low-level hardware access
 #include "gpio.h"
+#include <stdio.h>
 #include <avr32/io.h>
 #include "compiler.h"
 
@@ -833,6 +834,7 @@ void mobo_clock_division(U32 frequency) {
 	static U32 prev_frequency = FREQ_INVALID;
 
 	if ( (frequency != prev_frequency) || (prev_frequency == FREQ_INVALID) ) { 	// Only run at startup or when things change
+		printf("Frequency changed from %ldHz to %ldHz\r\n", prev_frequency, frequency);
 		gpio_enable_pin_pull_up(AVR32_PIN_PA03);	// Floating: stock AW with external /2. GND: modded AW with no ext. /2
 
 		pm_gc_disable(&AVR32_PM, AVR32_PM_GCLK_GCLK1);
