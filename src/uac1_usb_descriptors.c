@@ -143,6 +143,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_fs =
 		INTERFACE_INDEX1
 	},
 
+#ifdef USBHID
 	{
 		sizeof(S_usb_hid_descriptor),
 		HID_DESCRIPTOR,
@@ -152,6 +153,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_fs =
 		HID_REPORT_DESCRIPTOR,
 		Usb_format_mcu_to_usb_data(16, sizeof(usb_hid_report_descriptor))
 	},
+#endif
 
 	{
 		sizeof(S_usb_endpoint_descriptor),
@@ -472,6 +474,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_hs =
 		INTERFACE_INDEX1
 	},
 
+#ifdef USBHID
 	{
 		sizeof(S_usb_hid_descriptor),
 		HID_DESCRIPTOR,
@@ -481,6 +484,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_hs =
 		HID_REPORT_DESCRIPTOR,
 		Usb_format_mcu_to_usb_data(16, sizeof(usb_hid_report_descriptor))
 	},
+#endif
 
 	{
 		sizeof(S_usb_endpoint_descriptor),
@@ -798,6 +802,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_hs_widget =
 		INTERFACE_INDEX1
 	},
 
+#ifdef USBHID
 	{
 		sizeof(S_usb_hid_descriptor),
 		HID_DESCRIPTOR,
@@ -807,6 +812,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_hs_widget =
 		HID_REPORT_DESCRIPTOR,
 		Usb_format_mcu_to_usb_data(16, sizeof(usb_hid_report_descriptor))
 	},
+#endif
 
 	{
 		sizeof(S_usb_endpoint_descriptor),
@@ -1118,6 +1124,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_fs_widget =
 		INTERFACE_INDEX1
 	},
 
+#ifdef USBHID
 	{
 		sizeof(S_usb_hid_descriptor),
 		HID_DESCRIPTOR,
@@ -1127,6 +1134,7 @@ S_usb_user_configuration_descriptor uac1_usb_conf_desc_fs_widget =
 		HID_REPORT_DESCRIPTOR,
 		Usb_format_mcu_to_usb_data(16, sizeof(usb_hid_report_descriptor))
 	},
+#endif
 
 	{
 		sizeof(S_usb_endpoint_descriptor),

@@ -303,6 +303,7 @@ S_usb_user_configuration_descriptor uac2_usb_conf_desc_fs =
   	INTERFACE_INDEX3
   }
   ,
+#ifdef USBHID
   {
   	sizeof(S_usb_hid_descriptor),
   	HID_DESCRIPTOR,
@@ -311,8 +312,8 @@ S_usb_user_configuration_descriptor uac2_usb_conf_desc_fs =
   	HID_NUM_DESCRIPTORS,
   	HID_REPORT_DESCRIPTOR,
   	Usb_format_mcu_to_usb_data(16, sizeof(usb_hid_report_descriptor))
-  }
-  ,
+  },
+#endif
   {
   	sizeof(S_usb_endpoint_descriptor),
   	ENDPOINT_DESCRIPTOR,
@@ -549,6 +550,7 @@ S_usb_user_configuration_descriptor uac2_usb_conf_desc_hs =
   	INTERFACE_INDEX3
   }
   ,
+#ifdef USBHID
   {
   	sizeof(S_usb_hid_descriptor),
   	HID_DESCRIPTOR,
@@ -557,8 +559,8 @@ S_usb_user_configuration_descriptor uac2_usb_conf_desc_hs =
   	HID_NUM_DESCRIPTORS,
   	HID_REPORT_DESCRIPTOR,
   	Usb_format_mcu_to_usb_data(16, sizeof(usb_hid_report_descriptor))
-  }
-  ,
+  },
+#endif
   {
   	sizeof(S_usb_endpoint_descriptor),
   	ENDPOINT_DESCRIPTOR,

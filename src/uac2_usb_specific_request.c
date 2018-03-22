@@ -397,6 +397,7 @@ static Bool uac2_user_get_interface_descriptor() {
 	wInterface = usb_format_usb_to_mcu_data(16,Usb_read_endpoint_data(EP_CONTROL, 16));
 
 	switch (descriptor_type) {
+#ifdef USBHID
 	case HID_DESCRIPTOR:
 
 #ifdef USB_STATE_MACHINE_DEBUG
@@ -430,6 +431,7 @@ static Bool uac2_user_get_interface_descriptor() {
 #endif
 		}
 		return FALSE;
+#endif
 	case HID_REPORT_DESCRIPTOR:
 
 #ifdef USB_STATE_MACHINE_DEBUG

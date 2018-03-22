@@ -293,7 +293,9 @@ __attribute__((__packed__))
 	  S_usb_configuration_descriptor cfg;
 	  S_usb_interface_descriptor	 ifc0;
 	  S_usb_interface_descriptor	ifc1;
+#ifdef USBHID
 	  S_usb_hid_descriptor           hid;
+#endif
 	  S_usb_endpoint_descriptor      ep1;
 //	  S_usb_endpoint_descriptor		 ep2;
 	  S_usb_interface_association_descriptor iad1;

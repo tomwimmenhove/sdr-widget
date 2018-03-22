@@ -334,7 +334,9 @@ __attribute__((__packed__))
 
 	// BSB 20120720 Added, reduced to ONE TX endpoint
 	S_usb_interface_descriptor				ifc3;
+#ifdef USBHID
 	S_usb_hid_descriptor           			hid;
+#endif
 	S_usb_endpoint_descriptor     		 	ep4;
 }
 #if (defined __ICCAVR32__)

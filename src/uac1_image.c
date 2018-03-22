@@ -106,7 +106,9 @@ static void x_image_task_init(void) {
   vStartTaskMoboCtrl();
   // vStartTaskEXERCISE( tskIDLE_PRIORITY );
   PCM1792A_task_init(TRUE);
+#ifdef USBHID
   device_mouse_hid_task_init(UAC1_EP_HID_RX, UAC1_EP_HID_TX);
+#endif
   uac1_device_audio_task_init(UAC1_EP_AUDIO_IN, UAC1_EP_AUDIO_OUT, UAC1_EP_AUDIO_OUT_FB);
 #endif
 #if LCD_DISPLAY						// Multi-line LCD display
