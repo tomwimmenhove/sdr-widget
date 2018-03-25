@@ -89,6 +89,7 @@
 #include "uac2_device_audio_task.h"
 #include "taskPCM1792A.h"
 #include "PCM1792.h"
+#include "semphr.h"
 
 //_____ M A C R O S ________________________________________________________
 
@@ -1261,6 +1262,7 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 								uint8_t pcm1792_vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
 								pcm1792_set_volume_right(pcm1792_vol);
 							}
+							xSemaphoreGive(mutexVolume);
 						}
 
 						Usb_ack_control_out_received_free();

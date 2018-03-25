@@ -52,6 +52,13 @@
 	#define DAC_BUFFER_SIZE 48*2*16
 #endif
 
+#ifdef FREERTOS_USED
+void pcm1792a_task(void *pvParameters);
+#else
+void pcm1792a_task(void);
+#endif
+
+extern xSemaphoreHandle mutexVolume;
 
 // BSB 20131201 attempting improved playerstarted detection.
 #define USB_BUFFER_TOGGLE_LIM 2		// DMA towards DAC I2S has toogled buffers too many times. 0 is ideal number

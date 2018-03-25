@@ -63,6 +63,7 @@
 volatile U32 spk_usb_heart_beat = 0, old_spk_usb_heart_beat = 0;
 volatile U32 spk_usb_sample_counter = 0, old_spk_usb_sample_counter = 0;
 xSemaphoreHandle mutexSpkUSB;
+xSemaphoreHandle mutexVolume;
 
 static const gpio_map_t SSC_GPIO_MAP = {
 	{SSC_RX_CLOCK, SSC_RX_CLOCK_FUNCTION},
@@ -345,4 +346,28 @@ void PCM1792A_task_init(const Bool uac1) {
 	// Initial setup of clock and TX IO. This will cause LR inversion when called with FREQ_INVALID
 	// Therefore, call it with proper frequency when playback starts.
 	mobo_clock_division(FREQ_INVALID);
+	vSemaphoreCreateBinary(mutexVolume);
+
+#ifdef FREERTOS_USED
+	xTaskCreate(pcm1792a_task,
+			configTSK_PCM1792A_NAME,
+			configTSK_PCM1792A_STACK_SIZE,
+			NULL,
+			configTSK_PCM1792A_PRIORITY,
+			NULL);
+#endif  // FREERTOS_USED
+
+	print_dbg("PCM1792 task created\r\n");
+}
+
+#ifdef FREERTOS_USED
+void pcm1792a_task(void *pvParameters)
+#else
+void pcm1792a_task(void)
+#endif
+{
+	xSemaphoreTake(mutexVolume, portMAX_DELAY);
+
+	print_dbg("Volume changed\r\n");
+
 }

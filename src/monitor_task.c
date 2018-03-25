@@ -74,7 +74,7 @@ static int read_line(char** buf)
 
 	while (line_size == -1)
 	{
-		xSemaphoreTake(line_semaphore, 999999999);
+		xSemaphoreTake(line_semaphore, portMAX_DELAY);
 	}
 
 	if (buf != NULL)

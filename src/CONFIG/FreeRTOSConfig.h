@@ -196,8 +196,9 @@ to exclude the API function. */
 #define HPSDR_configTSK_USB_DAUDIO_PERIOD		2
 
 /* PCM1792A task definitions. */
-#define configTSK_PCM1792A_NAME					((const signed portCHAR *)"PCM1792A")
+#define configTSK_PCM1792A_NAME					((const signed portCHAR *)"PCM1792")
 #define configTSK_PCM1792A_STACK_SIZE			256
+#define configTSK_PCM1792A_PRIORITY				3
 #define UAC1_configTSK_PCM1792A_PRIORITY			(tskIDLE_PRIORITY + 2)// Was 1
 #define UAC2_configTSK_PCM1792A_PRIORITY			(tskIDLE_PRIORITY + 3)// Was +1, then +2
 #define HPSDR_configTSK_PCM1792A_PRIORITY		(tskIDLE_PRIORITY + 2)
