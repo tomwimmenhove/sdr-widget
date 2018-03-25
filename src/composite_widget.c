@@ -350,8 +350,8 @@ int main(void)
 
 	// Initialize usart comm
 	init_dbg_rs232(pm_freq_param.pba_f);
-	print_dbg("Tom Wimmenhove Electronics NBS-DAC-192/24\r\n");
-	print_dbg("UART Initialized\r\n");
+	print_dbg("\r\n\n\nTom Wimmenhove Electronics NBS-DAC-192/24\r\n");
+	print_dbg("USART Initialized\r\n");
 
 	gpio_clr_gpio_pin(AVR32_PIN_PX52);						// Not used in QNKTC / Henry Audio hardware
 

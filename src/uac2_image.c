@@ -36,6 +36,7 @@
 #endif
 #include "composite_widget.h"
 #include "taskPCM1792A.h"
+#include "monitor_task.h"
 //#include "I2C.h"
 
 /*
@@ -126,6 +127,8 @@ static void x_image_task_init(void) {
 	PCM1792A_task_init(FALSE);
 #ifdef USBHID
 	device_mouse_hid_task_init(UAC2_EP_HID_RX, UAC2_EP_HID_TX); // Added BSB 20120719
+#else
+	monitor_task_init();
 #endif
 	uac2_device_audio_task_init(UAC2_EP_AUDIO_IN, UAC2_EP_AUDIO_OUT, UAC2_EP_AUDIO_OUT_FB);
 #endif

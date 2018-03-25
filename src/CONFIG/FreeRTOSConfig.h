@@ -134,6 +134,7 @@ to exclude the API function. */
 #define configDBG_USART_RX_FUNCTION   AVR32_USART1_RXD_0_2_FUNCTION
 #define configDBG_USART_TX_PIN        AVR32_USART1_TXD_0_2_PIN
 #define configDBG_USART_TX_FUNCTION   AVR32_USART1_TXD_0_2_FUNCTION
+#define configDBG_USART_IRQ           AVR32_USART1_IRQ
 #ifdef USBHID
 #define configDBG_USART_BAUDRATE      57600
 #else
@@ -171,8 +172,14 @@ to exclude the API function. */
 /* USB device HID task definitions. */
 #define configTSK_USB_DHID_MOUSE_NAME			((const signed portCHAR *)"USB Device Mouse HID")
 #define configTSK_USB_DHID_MOUSE_STACK_SIZE		256
-#define configTSK_USB_DHID_MOUSE_PRIORITY     (tskIDLE_PRIORITY + 1)
-#define configTSK_USB_DHID_MOUSE_PERIOD       200
+#define configTSK_USB_DHID_MOUSE_PRIORITY     	(tskIDLE_PRIORITY + 1)
+#define configTSK_USB_DHID_MOUSE_PERIOD       	200
+
+/* USB device HID task definitions. */
+#define configTSK_MONITOR_NAME					((const signed portCHAR *)"Debugging monitor")
+#define configTSK_MONITOR_STACK_SIZE			256
+#define configTSK_MONITOR_PRIORITY	          	(tskIDLE_PRIORITY + 2)
+#define configTSK_MONITOR_PERIOD       			200
 
 /* USB device Audio task definitions. */
 #define configTSK_USB_DAUDIO_NAME				((const signed portCHAR *)"USB Device Audio")
@@ -201,7 +208,8 @@ to exclude the API function. */
 /* taskMoboCtrl definitions. */
 #define configTSK_MoboCtrl_NAME				  ((const signed portCHAR *)"taskMoboCtrl")
 #define configTSK_MoboCtrl_STACK_SIZE		  1024
-#define configTSK_MoboCtrl_PRIORITY			  (tskIDLE_PRIORITY + 1) // mobodebug: +2 works, but we prefer imrpoved UAC2 code // Was 0 // (tskIDLE_PRIORITY + 1) // Was 0
+//#define configTSK_MoboCtrl_PRIORITY			  (tskIDLE_PRIORITY + 1) // mobodebug: +2 works, but we prefer imrpoved UAC2 code // Was 0 // (tskIDLE_PRIORITY + 1) // Was 0
+#define configTSK_MoboCtrl_PRIORITY			  (tskIDLE_PRIORITY + 2) // mobodebug: +2 works, but we prefer imrpoved UAC2 code // Was 0 // (tskIDLE_PRIORITY + 1) // Was 0
 #define configTSK_MoboCtrl_PERIOD			  120
 
 /* taskPowerDisplay definitions. */

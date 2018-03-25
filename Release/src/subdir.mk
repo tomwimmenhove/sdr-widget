@@ -14,6 +14,7 @@ C_SRCS += \
 ../src/Si570.c \
 ../src/TMP100.c \
 ../src/PCM1792.c \
+../src/monitor_task.c \
 ../src/SI5351A.c \
 ../src/composite_widget.c \
 ../src/device_audio_task.c \
@@ -59,6 +60,7 @@ OBJS += \
 ./src/Si570.o \
 ./src/TMP100.o \
 ./src/PCM1792.o \
+./src/monitor_task.o \
 ./src/SI5351A.o \
 ./src/composite_widget.o \
 ./src/device_audio_task.o \
@@ -105,6 +107,7 @@ C_DEPS += \
 ./src/Si570.d \
 ./src/TMP100.d \
 ./src/PCM1792.d \
+./src/monitor_task.d \
 ./src/SI5351A.d \
 ./src/composite_widget.d \
 ./src/device_audio_task.d \
