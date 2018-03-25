@@ -92,7 +92,7 @@
 /* configTOTAL_HEAP_SIZE is not used when heap_3.c is used. */
 #define configTOTAL_HEAP_SIZE     ( ( size_t ) ( 1024*50 ) )
 #define configMAX_TASK_NAME_LEN   ( 20 )
-#define configUSE_TRACE_FACILITY  0
+#define configUSE_TRACE_FACILITY  1
 #define configUSE_16_BIT_TICKS    0
 #define configIDLE_SHOULD_YIELD   1
 #define configUSE_MUTEXES		  1
@@ -148,7 +148,8 @@ to exclude the API function. */
 #define configTSK_USB_PRIORITY                (tskIDLE_PRIORITY + 4)
 
 /* USB device task definitions. */
-#define configTSK_USB_DEV_NAME                ((const signed portCHAR *)"USB Device")
+//#define configTSK_USB_DEV_NAME                ((const signed portCHAR *)"USB Device")
+#define configTSK_USB_DEV_NAME                ((const signed portCHAR *)"USBDev")
 #define configTSK_USB_DEV_STACK_SIZE          256
 #define configTSK_USB_DEV_PRIORITY            (tskIDLE_PRIORITY + 3)
 #define UAC1_configTSK_USB_DEV_PERIOD              10
@@ -156,13 +157,15 @@ to exclude the API function. */
 #define HPSDR_configTSK_USB_DEV_PERIOD              2
 
 /* USB host task definitions. */
-#define configTSK_USB_HST_NAME                ((const signed portCHAR *)"USB Host")
+//#define configTSK_USB_HST_NAME                ((const signed portCHAR *)"USB Host")
+#define configTSK_USB_HST_NAME                ((const signed portCHAR *)"USBHost")
 #define configTSK_USB_HST_STACK_SIZE          256
 #define configTSK_USB_HST_PRIORITY            (tskIDLE_PRIORITY + 2)
 #define configTSK_USB_HST_PERIOD              200
 
 /* USB device CDC task definitions. */
-#define configTSK_USB_DCDC_NAME               ((const signed portCHAR *)"USB Device CDC")
+//#define configTSK_USB_DCDC_NAME               ((const signed portCHAR *)"USB Device CDC")
+#define configTSK_USB_DCDC_NAME               ((const signed portCHAR *)"USBCDC")
 #define configTSK_USB_DCDC_STACK_SIZE         256
 #define configTSK_USB_DCDC_PRIORITY           (tskIDLE_PRIORITY + 1)
 #define UAC1_configTSK_USB_DCDC_PERIOD             200
@@ -170,19 +173,22 @@ to exclude the API function. */
 #define HPSDR_configTSK_USB_DCDC_PERIOD             80
 
 /* USB device HID task definitions. */
-#define configTSK_USB_DHID_MOUSE_NAME			((const signed portCHAR *)"USB Device Mouse HID")
+//#define configTSK_USB_DHID_MOUSE_NAME			((const signed portCHAR *)"USB Device Mouse HID")
+#define configTSK_USB_DHID_MOUSE_NAME			((const signed portCHAR *)"HID")
 #define configTSK_USB_DHID_MOUSE_STACK_SIZE		256
 #define configTSK_USB_DHID_MOUSE_PRIORITY     	(tskIDLE_PRIORITY + 1)
 #define configTSK_USB_DHID_MOUSE_PERIOD       	200
 
 /* USB device HID task definitions. */
-#define configTSK_MONITOR_NAME					((const signed portCHAR *)"Debugging monitor")
+//#define configTSK_MONITOR_NAME					((const signed portCHAR *)"Debugging monitor")
+#define configTSK_MONITOR_NAME					((const signed portCHAR *)"Debug")
 #define configTSK_MONITOR_STACK_SIZE			256
 #define configTSK_MONITOR_PRIORITY	          	(tskIDLE_PRIORITY + 2)
 #define configTSK_MONITOR_PERIOD       			200
 
 /* USB device Audio task definitions. */
-#define configTSK_USB_DAUDIO_NAME				((const signed portCHAR *)"USB Device Audio")
+//#define configTSK_USB_DAUDIO_NAME				((const signed portCHAR *)"USB Device Audio")
+#define configTSK_USB_DAUDIO_NAME				((const signed portCHAR *)"devaud")
 #define configTSK_USB_DAUDIO_STACK_SIZE			256
 #define configTSK_USB_DAUDIO_PRIORITY			(tskIDLE_PRIORITY + 2)
 #define UAC1_configTSK_USB_DAUDIO_PERIOD		2
@@ -200,13 +206,15 @@ to exclude the API function. */
 #define HPSDR_configTSK_PCM1792A_PERIOD			100
 
 /* USB host Audio HID task definitions. */
-#define configTSK_USB_HAUDIO_NAME             ((const signed portCHAR *)"USB Host Audio")
+//#define configTSK_USB_HAUDIO_NAME             ((const signed portCHAR *)"USB Host Audio")
+#define configTSK_USB_HAUDIO_NAME             ((const signed portCHAR *)"hostaud")
 #define configTSK_USB_HAUDIO_STACK_SIZE       256
 #define configTSK_USB_HAUDIO_PRIORITY         (tskIDLE_PRIORITY + 2)// Was 1
 #define configTSK_USB_HAUDIO_PERIOD           10
 
 /* taskMoboCtrl definitions. */
-#define configTSK_MoboCtrl_NAME				  ((const signed portCHAR *)"taskMoboCtrl")
+//#define configTSK_MoboCtrl_NAME				  ((const signed portCHAR *)"taskMoboCtrl")
+#define configTSK_MoboCtrl_NAME				  ((const signed portCHAR *)"ctrl")
 #define configTSK_MoboCtrl_STACK_SIZE		  1024
 //#define configTSK_MoboCtrl_PRIORITY			  (tskIDLE_PRIORITY + 1) // mobodebug: +2 works, but we prefer imrpoved UAC2 code // Was 0 // (tskIDLE_PRIORITY + 1) // Was 0
 #define configTSK_MoboCtrl_PRIORITY			  (tskIDLE_PRIORITY + 2) // mobodebug: +2 works, but we prefer imrpoved UAC2 code // Was 0 // (tskIDLE_PRIORITY + 1) // Was 0

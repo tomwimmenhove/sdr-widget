@@ -16,6 +16,7 @@
 #include "wdt.h"
 #include "features.h"
 #include "usb_specific_request.h"
+#include "gpio.h"
 
 xSemaphoreHandle line_semaphore;
 
@@ -248,6 +249,9 @@ static void help_command_handler(char **argv, int argc, void* data)
 	print_dbg("read    : Read from memory\r\n");
 	print_dbg("write   : Write from memory\r\n");
 	print_dbg("dump    : Dump a bunch of memory\r\n");
+	print_dbg("ps      : List tasks\r\n");
+	print_dbg("setpin  : Set a GPIO pin to a logic '1' or '0'\r\n");
+	print_dbg("getpin  : Read the logic level from a GPIO pin\r\n");
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -384,6 +388,48 @@ static void dump_command_handler(char **argv, int argc, void* data)
 	}
 }
 
+static void ps_command_handler(char **argv, int argc, void* data)
+{
+	print_dbg("Name\t\tState\tPri\tStack\tNum\r\n");
+	char *buf = (char*) malloc(1024);
+	vTaskList((signed char*) buf);
+	print_dbg(buf);
+}
+
+static void setpin_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: setpin <GPIO> <logic level>\r\n");
+		return;
+	}
+
+	long int gpio = strtol(argv[1], NULL, 0);
+	long int level = strtol(argv[2], NULL, 0);
+
+	if (level)
+	{
+		gpio_set_gpio_pin(gpio);
+	}
+	else
+	{
+		gpio_clr_gpio_pin(gpio);
+	}
+}
+
+static void getpin_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 2)
+	{
+		print_dbg("Usage: setpin <GPIO>\r\n");
+		return;
+	}
+
+	int level = gpio_get_pin_value(strtol(argv[1], NULL, 0));
+	print_dbg("Level: ");
+	print_dbg(level ? "'1'\r\n" : "'0'\r\n");
+}
+
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
 	int i;
@@ -409,6 +455,9 @@ static const struct menu_function menu_functions[] =
 		{ "read", read_command_handler },
 		{ "write", write_command_handler },
 		{ "dump", dump_command_handler },
+		{ "ps", ps_command_handler },
+		{ "setpin", setpin_command_handler },
+		{ "getpin", getpin_command_handler },
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 
