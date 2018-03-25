@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "print_funcs.h"
 #include "monitor_task.h"
@@ -32,6 +33,18 @@ __attribute__((__interrupt__)) static void usart_int_handler(void)
 	{
 		char ch = (char) x;
 
+		// Backspace
+		if (ch == 8)
+		{
+			if (line_buffer_pos > 0)
+			{
+				print_dbg_char(ch);
+				line_buffer_pos--;
+				return;
+			}
+		}
+
+		// Enter
 		if (ch == '\r' || ch == '\n')
 		{
 			print_dbg_char('\n');
@@ -96,7 +109,7 @@ void monitor_task_init()
 
 static const struct variable *find_variable_entry(const struct variable *variables, int n, char *name)
 {
-	static int i;
+	int i;
     for (i = 0; i < n; i++)
     {
     	const struct variable *var = &variables[i];
@@ -154,9 +167,9 @@ static void var_version_getter()
 
 static const struct variable variables[] =
 {
+		{ "version", NULL, var_version_getter },
 		{ "image", var_image_setter, var_image_getter },
 		{ "freq", NULL, var_freq_getter },
-		{ "version", NULL, var_version_getter },
 };
 static int num_variables = sizeof(variables) / sizeof(struct variable);
 
@@ -201,7 +214,7 @@ static void get_command_handler(char **argv, int argc, void* data)
 {
 	if (argc == 1)
 	{
-		static int i;
+		int i;
 	    for (i = 0; i < num_variables; i++)
 	    {
 	    	display_variable(&variables[i], data);
@@ -227,11 +240,14 @@ static void get_command_handler(char **argv, int argc, void* data)
 
 static void help_command_handler(char **argv, int argc, void* data)
 {
-	print_dbg("\"help\"		:	This\r\n");
-	print_dbg("\"set\"		:	Set variable\r\n");
-	print_dbg("\"get\"		:	Get/read a variable\r\n");
-	print_dbg("\"reboot\"	:	Reboot the board\r\n");
-	print_dbg("\"dfu\")		:	Erase flash and boot into DFU bootloader\r\n");
+	print_dbg("help    : This\r\n");
+	print_dbg("set     : Set variable\r\n");
+	print_dbg("get     : Get/read a variable\r\n");
+	print_dbg("reboot  : Reboot the board\r\n");
+	print_dbg("dfu     : Erase flash and boot into DFU bootloader\r\n");
+	print_dbg("read    : Read from memory\r\n");
+	print_dbg("write   : Write from memory\r\n");
+	print_dbg("dump    : Dump a bunch of memory\r\n");
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -255,9 +271,122 @@ static void dfu_command_handler(char **argv, int argc, void* data)
 	while (1);				// Wait for it to fire
 }
 
+static void read_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: read <bitwidth> <address>\r\n");
+		return;
+	}
+
+	int bit_width = strtol(argv[1], NULL, 0);
+	long int address = strtol(argv[2], NULL, 0);
+
+	switch (bit_width)
+	{
+	case 8:
+	{
+		uint8_t value = * ((uint8_t*)address);
+		print_dbg_char_hex(value);
+		break;
+	}
+	case 16:
+	{
+		uint16_t value = * ((uint16_t*)address);
+		print_dbg_short_hex(value);
+		break;
+	}
+	case 32:
+	{
+		uint32_t value = * ((uint32_t*)address);
+		print_dbg_hex(value);
+		break;
+	}
+
+	default:
+		print_dbg("Incorrect bitwidth\r\n");
+		break;
+	}
+}
+
+static void write_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 4)
+	{
+		print_dbg("Usage: read <bitwidth> <address> <value>\r\n");
+		return;
+	}
+
+	int bit_width = strtol(argv[1], NULL, 0);
+	long int address = strtol(argv[2], NULL, 0);
+	long int value = strtol(argv[3], NULL, 0);
+
+	switch (bit_width)
+	{
+	case 8:
+	{
+		*((uint8_t*)address) = value;
+		break;
+	}
+	case 16:
+	{
+		*((uint16_t*)address) = value;
+		break;
+	}
+	case 32:
+	{
+		*((uint32_t*)address) = value;
+		break;
+	}
+
+	default:
+		print_dbg("Incorrect bitwidth\r\n");
+		break;
+	}
+}
+
+static void dump_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: dump <address> <length>\r\n");
+		return;
+	}
+
+	long int start_address = strtol(argv[1], NULL, 0);
+	long int end_address = start_address + strtol(argv[2], NULL, 0);
+
+	// Align */
+	start_address &= ~0xf;
+	end_address = (end_address + 0xf) & ~0xf;
+
+	long int address;
+	for (address = start_address; address < end_address; address += 16)
+	{
+		print_dbg_hex(address);
+		print_dbg_char(':');
+
+		uint8_t *dmp_data = (uint8_t*) address;
+
+		int i;
+		for (i = 0; i < 16; i++)
+		{
+			if (i % 4 == 0) print_dbg_char(' ');
+			print_dbg_char_hex(dmp_data[i]);
+			print_dbg_char(' ');
+		}
+		for (i = 0; i < 16; i++)
+		{
+			char ch = dmp_data[i];
+			print_dbg_char(isprint(ch) ? ch : '.');
+		}
+		print_dbg("\r\n");
+	}
+}
+
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
-	static int i;
+	int i;
     for (i = 0; i < n; i++)
     {
     	const struct menu_function *mf = &menu_functions[i];
@@ -277,6 +406,9 @@ static const struct menu_function menu_functions[] =
 		{ "get", get_command_handler },
 		{ "reboot", reboot_command_handler },
 		{ "dfu", dfu_command_handler },
+		{ "read", read_command_handler },
+		{ "write", write_command_handler },
+		{ "dump", dump_command_handler },
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 
