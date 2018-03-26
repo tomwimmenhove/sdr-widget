@@ -183,7 +183,7 @@ to exclude the API function. */
 //#define configTSK_MONITOR_NAME					((const signed portCHAR *)"Debugging monitor")
 #define configTSK_MONITOR_NAME					((const signed portCHAR *)"Debug")
 #define configTSK_MONITOR_STACK_SIZE			256
-#define configTSK_MONITOR_PRIORITY	          	(tskIDLE_PRIORITY + 2)
+#define configTSK_MONITOR_PRIORITY	          	(tskIDLE_PRIORITY + 1)
 #define configTSK_MONITOR_PERIOD       			200
 
 /* USB device Audio task definitions. */

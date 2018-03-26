@@ -107,6 +107,8 @@ static S16  old_gap = DAC_BUFFER_SIZE;
 
 static U8 ep_audio_in, ep_audio_out, ep_audio_out_fb;
 
+static Bool dac_is_cleared = false;
+
 //!
 //! @brief This function initializes the hardware/software resources
 //! required for device Audio task.
@@ -581,7 +583,6 @@ void uac2_device_audio_task(void *pvParameters)
 
 					silence_det_L = 0;						// We're looking for non-zero or non-static audio data..
 					silence_det_R = 0;						// We're looking for non-zero or non-static audio data..
-
 					for (i = 0; i < num_samples; i++) {
 						sample_HSB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
 						SB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
@@ -690,7 +691,6 @@ void uac2_device_audio_task(void *pvParameters)
 						}
 						samples_to_transfer_OUT = 1; // Revert to default:1. I.e. only one skip or insert per USB package
 					} // end for num_samples
-
 /*
 					// The silence detector detects the correct arrival of samples
 					if (silence_det_L != 0)
@@ -710,6 +710,7 @@ void uac2_device_audio_task(void *pvParameters)
 
 					Usb_ack_out_received_free(EP_AUDIO_OUT);
 
+					gpio_set_gpio_pin(AVR32_PIN_PB00);
 //					if ( (USB_IS_SILENT()) && (input_select == MOBO_SRC_UAC2) ) { // Oops, we just went silent, probably from pause
 					// mobodebug untested fix
 					if ( (USB_IS_SILENT()) && (input_select == MOBO_SRC_UAC2) && (playerStarted != FALSE) ) { // Oops, we just went silent, probably from pause
@@ -723,8 +724,13 @@ void uac2_device_audio_task(void *pvParameters)
 						#ifdef USB_STATE_MACHINE_DEBUG
 							print_dbg_char_char('8');
 						#endif
-						mobo_clear_dac_channel();
+						if (!dac_is_cleared)
+						{
+							mobo_clear_dac_channel();
+							dac_is_cleared = true;
+						}
 						// mobodebug Could this be the spot which sucks up CPU time with input_select == MOBO_SRC_UAC2
+						// FUCK YES IT IS!
 
 						#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)		// With WM8805 present, handle semaphores
 							ledSet = FALSE;
@@ -743,9 +749,13 @@ void uac2_device_audio_task(void *pvParameters)
 	//	 		           	mobo_led(FLED_DARK, FLED_YELLOW, FLED_DARK);	// Indicate silence detected by USB subsystem
 						#endif
 					}
+					else
+					{
+						dac_is_cleared = false;
+					}
 
 	/* BSB 20131031 New location of gap calculation code */
-
+					gpio_clr_gpio_pin(AVR32_PIN_PB00);
 					// Calculate gap after N packets, NOT each time feedback endpoint is polled
 					if (time_to_calculate_gap > 0)
 						time_to_calculate_gap--;
@@ -850,6 +860,7 @@ void uac2_device_audio_task(void *pvParameters)
 
 					} // end if time_to_calculate_gap == 0
 
+
 	/* BSB 20131031 End of new location for gap calculation code */
 
 				}	// end if (Is_usb_out_received(EP_AUDIO_OUT))
@@ -913,7 +924,6 @@ void uac2_device_audio_task(void *pvParameters)
 			}
 		} // end opposite of usb_alternate_setting_out ==  1
 
-
 		// BSB 20131201 attempting improved playerstarted detection
 			/* SPDIF reduced */
 #if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20) 	// With WM8805 input, USB subsystem will be running off a completely wacko MCLK!
@@ -933,7 +943,6 @@ void uac2_device_audio_task(void *pvParameters)
 #endif
 			}
 		}
-
 	} // end while vTask
 }
 
