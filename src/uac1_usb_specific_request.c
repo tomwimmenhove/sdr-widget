@@ -613,6 +613,7 @@ void audio_get_cur(void) {
 						}
 						Usb_write_endpoint_data(EP_CONTROL, 16, Usb_format_mcu_to_usb_data(16, spk_vol_usb_R));
 					}
+					xSemaphoreGive(mutexVolume);
 				}
 				break;
 		}
@@ -705,6 +706,7 @@ void audio_set_cur(void)
 		   if (length == 1) {
 			   temp1 = Usb_read_endpoint_data(EP_CONTROL, 8);
 			   spk_mute = temp1;
+			   xSemaphoreGive(mutexVolume);
 		   }
 	   }
 	   else if (wValue_msb == CS_VOLUME) {
@@ -732,6 +734,7 @@ void audio_set_cur(void)
 				   spk_vol_mult_R = usb_volume_format(spk_vol_usb_R);
 			   }
 		   }
+		   xSemaphoreGive(mutexVolume);
 	   }
 	}
 #endif

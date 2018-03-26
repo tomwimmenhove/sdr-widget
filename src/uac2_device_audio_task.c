@@ -642,21 +642,20 @@ void uac2_device_audio_task(void *pvParameters)
 
 
 	#ifdef FEATURE_VOLUME_CTRL
-						if (spk_vol_mult_L != VOL_MULT_UNITY) {	// Only touch gain-controlled samples
-							// 32-bit data words volume control
-							//sample_L = (S32)( (int64_t)( (int64_t)(sample_L) * (int64_t)spk_vol_mult_L ) >> VOL_MULT_SHIFT) ;
-							// XXX: Now set through hardware. Not doing the calculation here also saves a bunch of time
-							// rand8() too expensive at 192ksps
-							// sample_L += rand8(); // dither in bits 7:0
-						}
-
-						if (spk_vol_mult_R != VOL_MULT_UNITY) {	// Only touch gain-controlled samples
-							// 32-bit data words volume control
-							//sample_R = (S32)( (int64_t)( (int64_t)(sample_R) * (int64_t)spk_vol_mult_R ) >> VOL_MULT_SHIFT) ;
-							// XXX: Now set through hardware. Not doing the calculation here also saves a bunch of time
-							// rand8() too expensive at 192ksps
-							// sample_R += rand8(); // dither in bits 7:0
-						}
+						// XXX: Now set through hardware. Not doing the calculation here also saves a bunch of time
+//						if (spk_vol_mult_L != VOL_MULT_UNITY) {	// Only touch gain-controlled samples
+//							// 32-bit data words volume control
+//							sample_L = (S32)( (int64_t)( (int64_t)(sample_L) * (int64_t)spk_vol_mult_L ) >> VOL_MULT_SHIFT) ;
+//							// rand8() too expensive at 192ksps
+//							// sample_L += rand8(); // dither in bits 7:0
+//						}
+//
+//						if (spk_vol_mult_R != VOL_MULT_UNITY) {	// Only touch gain-controlled samples
+//							// 32-bit data words volume control
+//							sample_R = (S32)( (int64_t)( (int64_t)(sample_R) * (int64_t)spk_vol_mult_R ) >> VOL_MULT_SHIFT) ;
+//							// rand8() too expensive at 192ksps
+//							// sample_R += rand8(); // dither in bits 7:0
+//						}
 	#endif
 
 

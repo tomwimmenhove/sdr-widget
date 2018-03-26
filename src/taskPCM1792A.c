@@ -381,6 +381,7 @@ void pcm1792a_task(void)
 
 	spk_vol_usb_L_prev = spk_vol_usb_L;
 	spk_vol_usb_R_prev = spk_vol_usb_R;
+	spk_mute_prev = spk_mute;
 
 	for (;;)
 	{
