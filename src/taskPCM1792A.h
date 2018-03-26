@@ -48,8 +48,9 @@
 //	#define DAC_BUFFER_SIZE (32*2*48)
 
 #else
-	#define ADC_BUFFER_SIZE	48*2*8 // 48 khz, stereo, 8 ms worth
-	#define DAC_BUFFER_SIZE 48*2*16
+	#define ADC_BUFFER_SIZE	(48*2*8) // 48 khz, stereo, 8 ms worth
+	//#define DAC_BUFFER_SIZE (48*2*16)
+	#define DAC_BUFFER_SIZE (48*2*16)
 #endif
 
 #ifdef FREERTOS_USED
@@ -136,7 +137,6 @@ extern volatile int dac_must_clear;	// uacX_device_audio_task.c must clear the c
 
 extern volatile U32 spk_usb_heart_beat, old_spk_usb_heart_beat;
 extern volatile U32 spk_usb_sample_counter, old_spk_usb_sample_counter;
-extern xSemaphoreHandle mutexSpkUSB;
 
 // BSB 20131201 attempting improved playerstarted detection
 extern volatile S32 usb_buffer_toggle;

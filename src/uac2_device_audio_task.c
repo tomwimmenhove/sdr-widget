@@ -144,7 +144,6 @@ void uac2_device_audio_task_init(U8 ep_in, U8 ep_out, U8 ep_out_fb)
 //! @brief Entry point of the device Audio task management
 //!
 
-
 void uac2_device_audio_task(void *pvParameters)
 {
 //	static U32  time=0;
@@ -464,10 +463,8 @@ void uac2_device_audio_task(void *pvParameters)
 					num_samples = Usb_byte_count(EP_AUDIO_OUT);
 					num_samples = num_samples / 8;
 
-					xSemaphoreTake( mutexSpkUSB, portMAX_DELAY );
 					spk_usb_heart_beat++;					// indicates EP_AUDIO_OUT receiving data from host
 					spk_usb_sample_counter += num_samples; 	// track the num of samples received
-					xSemaphoreGive(mutexSpkUSB);
 
 					if( (!playerStarted) || (audio_OUT_must_sync) ) {	// BSB 20140917 attempting to help uacX_device_audio_task.c synchronize to DMA
 						time_to_calculate_gap = 0;			// BSB 20131031 moved gap calculation for DAC use
