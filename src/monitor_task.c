@@ -504,7 +504,7 @@ void monitor_task(void)
         }
         else
         {
-        	print_dbg("Unknwon comman\r\n");
+        	print_dbg("Unknwon command\r\n");
         }
 	}
 }
