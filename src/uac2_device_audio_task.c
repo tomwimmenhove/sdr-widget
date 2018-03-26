@@ -710,7 +710,6 @@ void uac2_device_audio_task(void *pvParameters)
 
 					Usb_ack_out_received_free(EP_AUDIO_OUT);
 
-					gpio_set_gpio_pin(AVR32_PIN_PB00);
 //					if ( (USB_IS_SILENT()) && (input_select == MOBO_SRC_UAC2) ) { // Oops, we just went silent, probably from pause
 					// mobodebug untested fix
 					if ( (USB_IS_SILENT()) && (input_select == MOBO_SRC_UAC2) && (playerStarted != FALSE) ) { // Oops, we just went silent, probably from pause
@@ -755,7 +754,6 @@ void uac2_device_audio_task(void *pvParameters)
 					}
 
 	/* BSB 20131031 New location of gap calculation code */
-					gpio_clr_gpio_pin(AVR32_PIN_PB00);
 					// Calculate gap after N packets, NOT each time feedback endpoint is polled
 					if (time_to_calculate_gap > 0)
 						time_to_calculate_gap--;
