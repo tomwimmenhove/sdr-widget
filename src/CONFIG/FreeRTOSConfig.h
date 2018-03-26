@@ -190,7 +190,7 @@ to exclude the API function. */
 //#define configTSK_USB_DAUDIO_NAME				((const signed portCHAR *)"USB Device Audio")
 #define configTSK_USB_DAUDIO_NAME				((const signed portCHAR *)"devaud")
 #define configTSK_USB_DAUDIO_STACK_SIZE			256
-#define configTSK_USB_DAUDIO_PRIORITY			(tskIDLE_PRIORITY + 2)
+#define configTSK_USB_DAUDIO_PRIORITY			(tskIDLE_PRIORITY + 3)//2)
 #define UAC1_configTSK_USB_DAUDIO_PERIOD		2
 #define UAC2_configTSK_USB_DAUDIO_PERIOD		1
 #define HPSDR_configTSK_USB_DAUDIO_PERIOD		2
@@ -198,7 +198,7 @@ to exclude the API function. */
 /* PCM1792A task definitions. */
 #define configTSK_PCM1792A_NAME					((const signed portCHAR *)"PCM1792")
 #define configTSK_PCM1792A_STACK_SIZE			256
-#define configTSK_PCM1792A_PRIORITY				3
+#define configTSK_PCM1792A_PRIORITY				2
 #define UAC1_configTSK_PCM1792A_PRIORITY			(tskIDLE_PRIORITY + 2)// Was 1
 #define UAC2_configTSK_PCM1792A_PRIORITY			(tskIDLE_PRIORITY + 3)// Was +1, then +2
 #define HPSDR_configTSK_PCM1792A_PRIORITY		(tskIDLE_PRIORITY + 2)

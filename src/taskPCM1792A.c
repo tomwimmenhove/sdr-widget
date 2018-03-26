@@ -53,6 +53,8 @@
 #include "cycle_counter.h"
 #include "PCM1792.h"
 #include "SI5351A.h"
+#include "device_audio_task.h"
+#include "usb_specific_request.h" // For VOL_MIN/MAX etc...
 
 //_____ M A C R O S ________________________________________________________
 
@@ -64,6 +66,7 @@ volatile U32 spk_usb_heart_beat = 0, old_spk_usb_heart_beat = 0;
 volatile U32 spk_usb_sample_counter = 0, old_spk_usb_sample_counter = 0;
 xSemaphoreHandle mutexSpkUSB;
 xSemaphoreHandle mutexVolume;
+
 
 static const gpio_map_t SSC_GPIO_MAP = {
 	{SSC_RX_CLOCK, SSC_RX_CLOCK_FUNCTION},
@@ -356,9 +359,17 @@ void PCM1792A_task_init(const Bool uac1) {
 			configTSK_PCM1792A_PRIORITY,
 			NULL);
 #endif  // FREERTOS_USED
-
-	print_dbg("PCM1792 task created\r\n");
 }
+
+static uint8_t usb_vol_to_pcm1792_atten(S16 n)
+{
+        if (n == VOL_MAX) return 255;
+        if (n == VOL_MIN) return 0;
+        return (n - VOL_MIN) / 128 + 136;
+}
+
+static S16 spk_vol_usb_L_prev, spk_vol_usb_R_prev;
+static Bool spk_mute_prev;
 
 #ifdef FREERTOS_USED
 void pcm1792a_task(void *pvParameters)
@@ -366,8 +377,41 @@ void pcm1792a_task(void *pvParameters)
 void pcm1792a_task(void)
 #endif
 {
-	xSemaphoreTake(mutexVolume, portMAX_DELAY);
+	print_dbg("PCM1792 task started\r\n");
 
-	print_dbg("Volume changed\r\n");
+	spk_vol_usb_L_prev = spk_vol_usb_L;
+	spk_vol_usb_R_prev = spk_vol_usb_R;
 
+	for (;;)
+	{
+		xSemaphoreTake(mutexVolume, portMAX_DELAY);
+
+		if (spk_vol_usb_L_prev != spk_vol_usb_L)
+		{
+			uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
+			print_dbg("Volume L: ");
+			print_dbg_char_hex(vol);
+			print_dbg("\r\n");
+			pcm1792_set_volume_left(vol);
+			spk_vol_usb_L_prev = spk_vol_usb_L;
+		}
+		if (spk_vol_usb_R_prev != spk_vol_usb_R)
+		{
+			uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
+			print_dbg("Volume R: ");
+			print_dbg_char_hex(vol);
+			print_dbg("\r\n");
+			pcm1792_set_volume_right(vol);
+			spk_vol_usb_R_prev = spk_vol_usb_R;
+		}
+
+		if (spk_mute_prev != spk_mute)
+		{
+			pcm1792_set_mute(spk_mute ? PCM1792A_MUTE_ENABLED : PCM1792A_MUTE_DISABLED);
+
+			print_dbg("Mute: ");
+			print_dbg(spk_mute ? "on\r\n" : "off\r\n");
+			spk_mute_prev = spk_mute;
+		}
+	}
 }

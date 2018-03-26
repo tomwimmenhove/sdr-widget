@@ -88,7 +88,6 @@
 #include "device_audio_task.h"
 #include "uac2_device_audio_task.h"
 #include "taskPCM1792A.h"
-#include "PCM1792.h"
 #include "semphr.h"
 
 //_____ M A C R O S ________________________________________________________
@@ -110,13 +109,6 @@ S_freq Mic_freq;
 
 extern const void *pbuffer;
 extern U16 data_to_transfer;
-
-uint8_t usb_vol_to_pcm1792_atten(S16 n)
-{
-        if (n == VOL_MAX) return 255;
-        if (n == VOL_MIN) return 0;
-        return (n - VOL_MIN) / 128 + 136;
-}
 
 // Send a descriptor to the Host, if needed by means of multiple fillings of EP0
 void send_descriptor(U16 wLength, Bool zlp) {
@@ -1218,7 +1210,7 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 						}
 						spk_mute = temp1;
 
-						pcm1792_set_mute(spk_mute ? PCM1792A_MUTE_ENABLED : PCM1792A_MUTE_DISABLED);
+						xSemaphoreGive(mutexVolume);
 
 						Usb_ack_control_out_received_free();
 						Usb_ack_control_in_ready_send(); //!< send a ZLP for STATUS phase
@@ -1242,8 +1234,6 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 								LSB( spk_vol_usb_L) = temp1;
 								MSB( spk_vol_usb_L) = temp2;
 								//spk_vol_mult_L = usb_volume_format(spk_vol_usb_L);
-								uint8_t pcm1792_vol = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
-								pcm1792_set_volume_left(pcm1792_vol);
 
 #ifdef USB_STATE_MACHINE_DEBUG
 								print_dbg_char('s');
@@ -1259,8 +1249,6 @@ Bool uac2_user_read_request(U8 type, U8 request) {
 								LSB( spk_vol_usb_R) = temp1;
 								MSB( spk_vol_usb_R) = temp2;
 								//spk_vol_mult_R = usb_volume_format(spk_vol_usb_R);
-								uint8_t pcm1792_vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
-								pcm1792_set_volume_right(pcm1792_vol);
 							}
 							xSemaphoreGive(mutexVolume);
 						}
