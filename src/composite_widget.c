@@ -180,6 +180,7 @@
 #include "taskPCM1792A.h"
 #include "cycle_counter.h"
 #include "ssc_i2s.h"
+#include "eeprom.h"
 
 /*
  *  A few global variables.
@@ -439,7 +440,6 @@ int main(void)
 
 	//	mobo_xo_select(FREQ_44, input_select);					// Initial GPIO XO control and frequency indication
 	mobo_xo_select(FREQ_INVALID, input_select);				// Initial GPIO XO control and frequency indication
-
 
 	// Initialize usart comm
 // Moved up...	init_dbg_rs232(pm_freq_param.pba_f);

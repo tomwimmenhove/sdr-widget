@@ -16,7 +16,10 @@
 #include "wdt.h"
 #include "features.h"
 #include "usb_specific_request.h"
+#include "device_audio_task.h"
 #include "gpio.h"
+#include "eeprom.h"
+#include "taskPCM1792A.h"
 
 xSemaphoreHandle line_semaphore;
 
@@ -166,11 +169,37 @@ static void var_version_getter()
 	printf("%d.%d\r\n", feature_get_nvram(feature_major_index), feature_get_nvram(feature_minor_index));
 }
 
+void var_volusbl_setter(char* value, void* data)
+{
+	spk_vol_usb_L = strtol(value, NULL, 0);
+	xSemaphoreGive(mutexVolume);
+}
+
+void var_volusbl_getter(void* data)
+{
+	uint16_t x = spk_vol_usb_L;
+	printf("0x%04x\r\n", x);
+}
+
+void var_volusbr_setter(char* value, void* data)
+{
+	spk_vol_usb_R = strtol(value, NULL, 0);
+	xSemaphoreGive(mutexVolume);
+}
+
+void var_volusbr_getter(void* data)
+{
+	uint16_t x = spk_vol_usb_R;
+	printf("0x%04x\r\n", x);
+}
+
 static const struct variable variables[] =
 {
 		{ "version", NULL, var_version_getter },
 		{ "image", var_image_setter, var_image_getter },
 		{ "freq", NULL, var_freq_getter },
+		{ "volusbl", var_volusbl_setter, var_volusbl_getter },
+		{ "volusbr", var_volusbr_setter, var_volusbr_getter },
 };
 static int num_variables = sizeof(variables) / sizeof(struct variable);
 
@@ -247,8 +276,11 @@ static void help_command_handler(char **argv, int argc, void* data)
 	print_dbg("reboot  : Reboot the board\r\n");
 	print_dbg("dfu     : Erase flash and boot into DFU bootloader\r\n");
 	print_dbg("read    : Read from memory\r\n");
-	print_dbg("write   : Write from memory\r\n");
+	print_dbg("write   : Write to memory\r\n");
 	print_dbg("dump    : Dump a bunch of memory\r\n");
+	print_dbg("eeread  : Read from EEPROM\r\n");
+	print_dbg("eewrite : Write to EEPROM\r\n");
+	print_dbg("eedump  : Dump a bunch of EEPROM\r\n");
 	print_dbg("ps      : List tasks\r\n");
 	print_dbg("setpin  : Set a GPIO pin to a logic '1' or '0'\r\n");
 	print_dbg("getpin  : Read the logic level from a GPIO pin\r\n");
@@ -349,6 +381,25 @@ static void write_command_handler(char **argv, int argc, void* data)
 	}
 }
 
+static void dump_hex_row(long int address, uint8_t* row, int len)
+{
+	print_dbg_hex(address);
+	print_dbg_char(':');
+	int i;
+	for (i = 0; i < len; i++)
+	{
+		if (i % 4 == 0) print_dbg_char(' ');
+		print_dbg_char_hex(row[i]);
+		print_dbg_char(' ');
+	}
+	for (i = 0; i < len; i++)
+	{
+		char ch = row[i];
+		print_dbg_char(isprint(ch) ? ch : '.');
+	}
+	print_dbg("\r\n");
+}
+
 static void dump_command_handler(char **argv, int argc, void* data)
 {
 	if (argc != 3)
@@ -367,24 +418,104 @@ static void dump_command_handler(char **argv, int argc, void* data)
 	long int address;
 	for (address = start_address; address < end_address; address += 16)
 	{
-		print_dbg_hex(address);
-		print_dbg_char(':');
-
 		uint8_t *dmp_data = (uint8_t*) address;
+		dump_hex_row(address, dmp_data, 16);
+	}
+}
 
-		int i;
-		for (i = 0; i < 16; i++)
-		{
-			if (i % 4 == 0) print_dbg_char(' ');
-			print_dbg_char_hex(dmp_data[i]);
-			print_dbg_char(' ');
-		}
-		for (i = 0; i < 16; i++)
-		{
-			char ch = dmp_data[i];
-			print_dbg_char(isprint(ch) ? ch : '.');
-		}
-		print_dbg("\r\n");
+static void eeread_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: eeread <bitwidth> <address>\r\n");
+		return;
+	}
+
+	int bit_width = strtol(argv[1], NULL, 0);
+	long int address = strtol(argv[2], NULL, 0);
+
+	switch (bit_width)
+	{
+	case 8:
+	{
+		print_dbg_char_hex(eeprom_get8(address));
+		break;
+	}
+	case 16:
+	{
+		print_dbg_short_hex(eeprom_get16(address));
+		break;
+	}
+	case 32:
+	{
+		print_dbg_hex(eeprom_get32(address));
+		break;
+	}
+
+	default:
+		print_dbg("Incorrect bitwidth\r\n");
+		break;
+	}
+}
+
+static void eewrite_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 4)
+	{
+		print_dbg("Usage: eeread <bitwidth> <address> <value>\r\n");
+		return;
+	}
+
+	int bit_width = strtol(argv[1], NULL, 0);
+	long int address = strtol(argv[2], NULL, 0);
+	long int value = strtol(argv[3], NULL, 0);
+
+	switch (bit_width)
+	{
+	case 8:
+	{
+		eeprom_put8(address, value);
+		break;
+	}
+	case 16:
+	{
+		eeprom_put16(address, value);
+		break;
+	}
+	case 32:
+	{
+		eeprom_put32(address, value);
+		break;
+	}
+
+	default:
+		print_dbg("Incorrect bitwidth\r\n");
+		break;
+	}
+}
+
+static void eedump_command_handler(char **argv, int argc, void* data)
+{
+	uint8_t row[16];
+
+	if (argc != 3)
+	{
+		print_dbg("Usage: eedump <address> <length>\r\n");
+		return;
+	}
+
+	long int start_address = strtol(argv[1], NULL, 0);
+	long int end_address = start_address + strtol(argv[2], NULL, 0);
+
+	// Align */
+	start_address &= ~0xf;
+	end_address = (end_address + 0xf) & ~0xf;
+
+	long int address;
+	for (address = start_address; address < end_address; address += sizeof(row))
+	{
+		eeprom_read(address, row, sizeof(row));
+		dump_hex_row(address, row, sizeof(row));
 	}
 }
 
@@ -394,6 +525,7 @@ static void ps_command_handler(char **argv, int argc, void* data)
 	char *buf = (char*) malloc(1024);
 	vTaskList((signed char*) buf);
 	print_dbg(buf);
+	free(buf);
 }
 
 static void setpin_command_handler(char **argv, int argc, void* data)
@@ -455,6 +587,9 @@ static const struct menu_function menu_functions[] =
 		{ "read", read_command_handler },
 		{ "write", write_command_handler },
 		{ "dump", dump_command_handler },
+		{ "eeread", eeread_command_handler },
+		{ "eewrite", eewrite_command_handler },
+		{ "eedump", eedump_command_handler },
 		{ "ps", ps_command_handler },
 		{ "setpin", setpin_command_handler },
 		{ "getpin", getpin_command_handler },

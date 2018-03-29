@@ -27,7 +27,7 @@
 
 //#include <stdio.h>
 #include "usart.h"     // Shall be included before FreeRTOS header files, since 'inline' is defined to ''; leading to
-                       // link errors
+// link errors
 #include "conf_usb.h"
 
 
@@ -55,6 +55,7 @@
 #include "SI5351A.h"
 #include "device_audio_task.h"
 #include "usb_specific_request.h" // For VOL_MIN/MAX etc...
+#include "eeprom.h"
 
 //_____ M A C R O S ________________________________________________________
 
@@ -68,30 +69,30 @@ xSemaphoreHandle mutexVolume;
 
 
 static const gpio_map_t SSC_GPIO_MAP = {
-	{SSC_RX_CLOCK, SSC_RX_CLOCK_FUNCTION},
-	{SSC_RX_DATA, SSC_RX_DATA_FUNCTION},
-	{SSC_RX_FRAME_SYNC, SSC_RX_FRAME_SYNC_FUNCTION},
-	{SSC_TX_CLOCK, SSC_TX_CLOCK_FUNCTION},
-	{SSC_TX_DATA, SSC_TX_DATA_FUNCTION},
-	{SSC_TX_FRAME_SYNC, SSC_TX_FRAME_SYNC_FUNCTION}
+		{SSC_RX_CLOCK, SSC_RX_CLOCK_FUNCTION},
+		{SSC_RX_DATA, SSC_RX_DATA_FUNCTION},
+		{SSC_RX_FRAME_SYNC, SSC_RX_FRAME_SYNC_FUNCTION},
+		{SSC_TX_CLOCK, SSC_TX_CLOCK_FUNCTION},
+		{SSC_TX_DATA, SSC_TX_DATA_FUNCTION},
+		{SSC_TX_FRAME_SYNC, SSC_TX_FRAME_SYNC_FUNCTION}
 };
 
 static const pdca_channel_options_t PDCA_OPTIONS = {
-	.addr = (void *)audio_buffer_0,         // memory address
-	.pid = AVR32_PDCA_PID_SSC_RX,           // select peripheral
-	.size = ADC_BUFFER_SIZE,              // transfer counter
-	.r_addr = NULL,                         // next memory address // Is this safe?? What about using audio_buffer_1 here?
-	.r_size = 0,                            // next transfer counter // Is this to force an immediate interrupt?
-	.transfer_size = PDCA_TRANSFER_SIZE_WORD  // select size of the transfer - 32 bits
+		.addr = (void *)audio_buffer_0,         // memory address
+		.pid = AVR32_PDCA_PID_SSC_RX,           // select peripheral
+		.size = ADC_BUFFER_SIZE,              // transfer counter
+		.r_addr = NULL,                         // next memory address // Is this safe?? What about using audio_buffer_1 here?
+		.r_size = 0,                            // next transfer counter // Is this to force an immediate interrupt?
+		.transfer_size = PDCA_TRANSFER_SIZE_WORD  // select size of the transfer - 32 bits
 };
 
 static const pdca_channel_options_t SPK_PDCA_OPTIONS = {
-	.addr = (void *)spk_buffer_0,         // memory address
-	.pid = AVR32_PDCA_PID_SSC_TX,           // select peripheral
-	.size = DAC_BUFFER_SIZE,              // transfer counter
-	.r_addr = NULL,                         // next memory address
-	.r_size = 0,                            // next transfer counter
-	.transfer_size = PDCA_TRANSFER_SIZE_WORD  // select size of the transfer - 32 bits
+		.addr = (void *)spk_buffer_0,         // memory address
+		.pid = AVR32_PDCA_PID_SSC_TX,           // select peripheral
+		.size = DAC_BUFFER_SIZE,              // transfer counter
+		.r_addr = NULL,                         // next memory address
+		.r_size = 0,                            // next transfer counter
+		.transfer_size = PDCA_TRANSFER_SIZE_WORD  // select size of the transfer - 32 bits
 };
 
 volatile S32 audio_buffer_0[ADC_BUFFER_SIZE]; // BSB 20170324 changed to signed
@@ -136,14 +137,14 @@ __attribute__((__interrupt__)) static void pdca_int_handler(void) {
 		pdca_reload_channel(PDCA_CHANNEL_SSC_RX, (void *)audio_buffer_1, ADC_BUFFER_SIZE);
 		ADC_buf_DMA_write = 1;
 #ifdef USB_STATE_MACHINE_DEBUG
-    	gpio_set_gpio_pin(AVR32_PIN_PX17);			// Pin 83
+		gpio_set_gpio_pin(AVR32_PIN_PX17);			// Pin 83
 #endif
 	}
 	else if (ADC_buf_DMA_write == 1) {
 		pdca_reload_channel(PDCA_CHANNEL_SSC_RX, (void *)audio_buffer_0, ADC_BUFFER_SIZE);
 		ADC_buf_DMA_write = 0;
 #ifdef USB_STATE_MACHINE_DEBUG
-   	gpio_clr_gpio_pin(AVR32_PIN_PX17);			// Pin 83
+		gpio_clr_gpio_pin(AVR32_PIN_PX17);			// Pin 83
 #endif
 	}
 
@@ -215,20 +216,20 @@ static void pdca_set_irq(void) {
 void PCM1792A_pdca_tx_enable(U32 frequency) {
 	U16 countdown = 0xFFFF;
 
-//	gpio_set_gpio_pin(AVR32_PIN_PX52); // ch5 p87
+	//	gpio_set_gpio_pin(AVR32_PIN_PX52); // ch5 p87
 
 	pdca_disable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_TX);
 
-	#ifdef USB_STATE_MACHINE_DEBUG
-		print_dbg_char_char('0');
-	#endif
+#ifdef USB_STATE_MACHINE_DEBUG
+	print_dbg_char_char('0');
+#endif
 	mobo_clear_dac_channel(); // To avoid odd spurs which some times occur
 
-   	taskENTER_CRITICAL();
+	taskENTER_CRITICAL();
 
 	if ( (frequency == FREQ_44) || (frequency == FREQ_48) ||
-		 (frequency == FREQ_88) || (frequency == FREQ_96) ||
-		 (frequency == FREQ_176) || (frequency == FREQ_192) ){
+			(frequency == FREQ_88) || (frequency == FREQ_96) ||
+			(frequency == FREQ_176) || (frequency == FREQ_192) ){
 		while ( (gpio_get_pin_value(AVR32_PIN_PX27) == 0) && (countdown != 0) ) countdown--;
 		while ( (gpio_get_pin_value(AVR32_PIN_PX27) == 1) && (countdown != 0) ) countdown--;
 		while ( (gpio_get_pin_value(AVR32_PIN_PX27) == 0) && (countdown != 0) ) countdown--;
@@ -246,12 +247,19 @@ void PCM1792A_pdca_tx_enable(U32 frequency) {
 	}
 
 	// What is the optimal sequence?
-   	pdca_enable(PDCA_CHANNEL_SSC_TX);
+	pdca_enable(PDCA_CHANNEL_SSC_TX);
 	pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_TX);
 
 	taskEXIT_CRITICAL();
 
-//	gpio_clr_gpio_pin(AVR32_PIN_PX52); // ch5 p87
+	//	gpio_clr_gpio_pin(AVR32_PIN_PX52); // ch5 p87
+}
+
+static uint8_t usb_vol_to_pcm1792_atten(S16 n)
+{
+	if (n == VOL_MAX) return 255;
+	if (n == VOL_MIN) return 0;
+	return (n - VOL_MIN) / 128 + 136;
 }
 
 void PCM1792A_task_init(const Bool uac1) {
@@ -283,8 +291,15 @@ void PCM1792A_task_init(const Bool uac1) {
 	// Enable attenuation (volume) control
 	print_dbg("Configuring PCM1792\r\n");
 	pcm1792_set_atld(PCM1792A_ATLD_ENABLED);
-	pcm1792_set_volume_left(0xff);
-	pcm1792_set_volume_right(0xff);
+
+	//spk_vol_usb_L = usb_volume_flash(CH_LEFT, 0, VOL_READ);
+	//spk_vol_usb_R = usb_volume_flash(CH_RIGHT, 0, VOL_READ);
+	spk_vol_usb_L = eeprom_get16(feature_msb_vol_L);
+	spk_vol_usb_R = eeprom_get16(feature_msb_vol_R);
+	uint8_t vol_l = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
+	uint8_t vol_r = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
+	pcm1792_set_volume_left(vol_l);
+	pcm1792_set_volume_right(vol_r);
 
 	print_dbg("Setting up I2S interface\r\n");
 	// Assign GPIO to SSC.
@@ -323,26 +338,26 @@ void PCM1792A_task_init(const Bool uac1) {
 	// HSB Bus matrix register MCFG1 is associated with the CPU instruction master interface.
 	AVR32_HMATRIX.mcfg[AVR32_HMATRIX_MASTER_CPU_INSN] = 0x1;
 
-// 	ADC_buf_DMA_write = 0; Now done in (global) variable declaration
-//	DAC_buf_DMA_read = 0; Now done in (global) variable declaration
+	// 	ADC_buf_DMA_write = 0; Now done in (global) variable declaration
+	//	DAC_buf_DMA_read = 0; Now done in (global) variable declaration
 	// Register PDCA IRQ interruptS. // Plural those are!
 	pdca_set_irq();
 
 	// Init ADC channel for SPDIF buffering
-	#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
+#if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
 	/*  Empty for now....
 		pdca_init_channel(PDCA_CHANNEL_SSC_RX, &PDCA_OPTIONS); // init PDCA channel with options.
 //		pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
 		// pdca_enable() is called from WM8805 init functions
 	 */
-	#else
-		// Init PDCA channel with the pdca_options.
-		// REMOVE! The ADC should be designed out completely
-		if (!FEATURE_ADC_NONE) {
-			pdca_init_channel(PDCA_CHANNEL_SSC_RX, &PDCA_OPTIONS); // init PDCA channel with options.
-			pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
-		}
-	#endif
+#else
+	// Init PDCA channel with the pdca_options.
+	// REMOVE! The ADC should be designed out completely
+	if (!FEATURE_ADC_NONE) {
+		pdca_init_channel(PDCA_CHANNEL_SSC_RX, &PDCA_OPTIONS); // init PDCA channel with options.
+		pdca_enable_interrupt_reload_counter_zero(PDCA_CHANNEL_SSC_RX);
+	}
+#endif
 
 
 	// Initial setup of clock and TX IO. This will cause LR inversion when called with FREQ_INVALID
@@ -358,13 +373,6 @@ void PCM1792A_task_init(const Bool uac1) {
 			configTSK_PCM1792A_PRIORITY,
 			NULL);
 #endif  // FREERTOS_USED
-}
-
-static uint8_t usb_vol_to_pcm1792_atten(S16 n)
-{
-        if (n == VOL_MAX) return 255;
-        if (n == VOL_MIN) return 0;
-        return (n - VOL_MIN) / 128 + 136;
 }
 
 static S16 spk_vol_usb_L_prev, spk_vol_usb_R_prev;
@@ -384,34 +392,56 @@ void pcm1792a_task(void)
 
 	for (;;)
 	{
-		xSemaphoreTake(mutexVolume, portMAX_DELAY);
-
-		if (spk_vol_usb_L_prev != spk_vol_usb_L)
+		if (xSemaphoreTake(mutexVolume, configTSK_PCM1792A_PERIOD))
 		{
-			uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
-			print_dbg("Volume L: ");
-			print_dbg_char_hex(vol);
-			print_dbg("\r\n");
-			pcm1792_set_volume_left(vol);
-			spk_vol_usb_L_prev = spk_vol_usb_L;
+			if (spk_vol_usb_L_prev != spk_vol_usb_L)
+			{
+				uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
+				print_dbg("Volume L: ");
+				print_dbg_char_hex(vol);
+				print_dbg("\r\n");
+				pcm1792_set_volume_left(vol);
+				spk_vol_usb_L_prev = spk_vol_usb_L;
+			}
+			if (spk_vol_usb_R_prev != spk_vol_usb_R)
+			{
+				uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
+				print_dbg("Volume R: ");
+				print_dbg_char_hex(vol);
+				print_dbg("\r\n");
+				pcm1792_set_volume_right(vol);
+				spk_vol_usb_R_prev = spk_vol_usb_R;
+			}
+
+			if (spk_mute_prev != spk_mute)
+			{
+				pcm1792_set_mute(spk_mute ? PCM1792A_MUTE_ENABLED : PCM1792A_MUTE_DISABLED);
+
+				print_dbg("Mute: ");
+				print_dbg(spk_mute ? "on\r\n" : "off\r\n");
+				spk_mute_prev = spk_mute;
+			}
 		}
-		if (spk_vol_usb_R_prev != spk_vol_usb_R)
+		else
 		{
-			uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
-			print_dbg("Volume R: ");
-			print_dbg_char_hex(vol);
-			print_dbg("\r\n");
-			pcm1792_set_volume_right(vol);
-			spk_vol_usb_R_prev = spk_vol_usb_R;
-		}
-
-		if (spk_mute_prev != spk_mute)
-		{
-			pcm1792_set_mute(spk_mute ? PCM1792A_MUTE_ENABLED : PCM1792A_MUTE_DISABLED);
-
-			print_dbg("Mute: ");
-			print_dbg(spk_mute ? "on\r\n" : "off\r\n");
-			spk_mute_prev = spk_mute;
+			/* XXX: This will never work. We can't handle interrupts while we're
+			   writing to flash, since the code is to be executed from flash, which
+			   will now be unavailable. */
+			/* Doing this in an external EEPROM now. */
+			//if (spk_vol_usb_L != usb_volume_flash(CH_LEFT, 0, VOL_READ))
+			if (spk_vol_usb_L != (S16) eeprom_get16(feature_msb_vol_L))
+			{
+				print_dbg("Saving left channel volume to EEPROM\r\n");
+				//usb_volume_flash(CH_LEFT, spk_vol_usb_L, VOL_WRITE);
+				eeprom_put16(feature_msb_vol_L, spk_vol_usb_L);
+			}
+			//if (spk_vol_usb_R != usb_volume_flash(CH_RIGHT, 0, VOL_READ))
+			if (spk_vol_usb_R != (S16) eeprom_get16(feature_msb_vol_R))
+			{
+				print_dbg("Saving right channel volume to EEPROM\r\n");
+				//usb_volume_flash(CH_RIGHT, spk_vol_usb_R, VOL_WRITE);
+				eeprom_put16(feature_msb_vol_R, spk_vol_usb_R);
+			}
 		}
 	}
 }
