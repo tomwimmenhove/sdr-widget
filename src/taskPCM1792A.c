@@ -296,6 +296,14 @@ void PCM1792A_task_init(const Bool uac1) {
 	//spk_vol_usb_R = usb_volume_flash(CH_RIGHT, 0, VOL_READ);
 	spk_vol_usb_L = eeprom_get16(feature_msb_vol_L);
 	spk_vol_usb_R = eeprom_get16(feature_msb_vol_R);
+	if (spk_vol_usb_L > VOL_MAX || spk_vol_usb_L < VOL_MIN)
+	{
+		spk_vol_usb_L = VOL_DEFAULT;
+	}
+	if (spk_vol_usb_R > VOL_MAX || spk_vol_usb_R < VOL_MIN)
+	{
+		spk_vol_usb_R = VOL_DEFAULT;
+	}
 	uint8_t vol_l = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
 	uint8_t vol_r = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
 	pcm1792_set_volume_left(vol_l);
