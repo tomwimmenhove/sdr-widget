@@ -773,7 +773,9 @@ static void vtaskMoboCtrl( void * pcParameters )
 				#error undefined hardware
 				#endif
 
-				printf("PROG Button pressed for %d iterations\r\n", btn_poll_temp + 1);
+				print_dbg("PROG Button pressed for ");
+				print_dbg_short_hex(btn_poll_temp + 1);
+				print_dbg(" iterations\r\n");
 
 				if (btn_poll_temp > 2)  // If button pressed during at least 2 consecutive 2Hz polls...
     			{

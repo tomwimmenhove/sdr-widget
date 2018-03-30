@@ -161,12 +161,16 @@ static void var_image_getter(void* data)
 
 static void var_freq_getter()
 {
-	printf("%ld\r\n", current_freq.frequency);
+	print_dbg_ulong(current_freq.frequency);
+	print_dbg("\r\n");
 }
 
 static void var_version_getter()
 {
-	printf("%d.%d\r\n", feature_get_nvram(feature_major_index), feature_get_nvram(feature_minor_index));
+	print_dbg_ulong(feature_get_nvram(feature_major_index));
+	print_dbg_char('.');
+	print_dbg_ulong(feature_get_nvram(feature_minor_index));
+	print_dbg("\r\n");
 }
 
 void var_volusbl_setter(char* value, void* data)
@@ -177,8 +181,8 @@ void var_volusbl_setter(char* value, void* data)
 
 void var_volusbl_getter(void* data)
 {
-	uint16_t x = spk_vol_usb_L;
-	printf("0x%04x\r\n", x);
+	print_dbg_short_hex(spk_vol_usb_L);
+	print_dbg("\r\n");
 }
 
 void var_volusbr_setter(char* value, void* data)
@@ -189,8 +193,8 @@ void var_volusbr_setter(char* value, void* data)
 
 void var_volusbr_getter(void* data)
 {
-	uint16_t x = spk_vol_usb_R;
-	printf("0x%04x\r\n", x);
+	print_dbg_short_hex(spk_vol_usb_R);
+	print_dbg("\r\n");
 }
 
 static const struct variable variables[] =
