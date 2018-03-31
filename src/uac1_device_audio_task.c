@@ -87,7 +87,7 @@
 
 // To access input select constants
 #include "Mobo_config.h"
-
+#include "wdt.h"
 
 
 //_____ M A C R O S ________________________________________________________
@@ -198,6 +198,7 @@ void uac1_device_audio_task(void *pvParameters)
 	xLastWakeTime = xTaskGetTickCount();
 
 	while (TRUE) {
+		wdt_clear(); // Good idea? Bad idea?
 		vTaskDelayUntil(&xLastWakeTime, UAC1_configTSK_USB_DAUDIO_PERIOD);
 
 		// Must we clear the DAC buffer contents?

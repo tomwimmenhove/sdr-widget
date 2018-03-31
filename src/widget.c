@@ -248,6 +248,7 @@ char *widget_reset_cause(void) {
 //
 void widget_reset(void) {
 	wdt_enable(500000);		// Enable Watchdog with 500ms patience
+	DISABLE_ALL_INTERRUPTS();
 	while (1);				// Wait for it to fire
 }
 

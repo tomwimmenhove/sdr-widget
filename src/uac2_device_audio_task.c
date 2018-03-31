@@ -88,7 +88,7 @@
 
 // To access input select constants
 #include "Mobo_config.h"
-
+#include "wdt.h"
 
 //_____ M A C R O S ________________________________________________________
 
@@ -195,6 +195,7 @@ void uac2_device_audio_task(void *pvParameters)
 	xLastWakeTime = xTaskGetTickCount();
 
 	while (TRUE) {
+		wdt_clear(); // Good idea? Bad idea?
 		vTaskDelayUntil(&xLastWakeTime, UAC2_configTSK_USB_DAUDIO_PERIOD);
 
 		// Introduced into UAC2 code with mobodebug
