@@ -670,7 +670,7 @@ void audio_set_cur(void)
 
 #if (defined HW_GEN_DIN10) || (defined HW_GEN_DIN20)
 		if (input_select == MOBO_SRC_UAC1) { // Only mute if appropriate. Perhaps input has changed to NONE before this can execute
-			spk_mute = TRUE; // mute speaker while changing frequency and oscillator
+			//spk_mute = TRUE; // mute speaker while changing frequency and oscillator
 			mobo_clear_dac_channel();
 		}
 		if ( (input_select == MOBO_SRC_UAC1) || (input_select == MOBO_SRC_NONE) ) {	// Only change I2S settings if appropriate
@@ -681,7 +681,7 @@ void audio_set_cur(void)
 
 		}
 #else
-		spk_mute = TRUE; // mute speaker while changing frequency and oscillator
+		//spk_mute = TRUE; // mute speaker while changing frequency and oscillator
 		#ifdef USB_STATE_MACHINE_DEBUG
 			print_dbg_char_char('=');
 		#endif

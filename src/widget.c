@@ -247,7 +247,7 @@ char *widget_reset_cause(void) {
 // provide a call which generates a system reset
 //
 void widget_reset(void) {
-	wdt_enable(5000000);	// Enable Watchdog with 500ms patience
+	wdt_enable(500000);		// Enable Watchdog with 500ms patience
 	while (1);				// Wait for it to fire
 }
 
