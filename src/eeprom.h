@@ -5,6 +5,9 @@
 #define EEPROM_I2C_ADDR_GET_MSB(x)	(((x) >> 8) & 0x03)
 #define EEPROM_I2C_GET_ADDR(x)		((EEPROM_I2C_ADDR) | (EEPROM_I2C_ADDR_GET_MSB(x)))
 
+#define EEPROM_SIZE					256
+#define EEPROM_PAGE_SIZE			8
+
 uint8_t eeprom_read(uint16_t word_address, uint8_t* data, uint8_t len);
 uint8_t eeprom_write(uint16_t word_address, uint8_t* data, uint8_t len);
 void eeprom_test();

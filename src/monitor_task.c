@@ -285,6 +285,7 @@ static void help_command_handler(char **argv, int argc, void* data)
 	print_dbg("eeread  : Read from EEPROM\r\n");
 	print_dbg("eewrite : Write to EEPROM\r\n");
 	print_dbg("eedump  : Dump a bunch of EEPROM\r\n");
+	print_dbg("eenull  : Write zeroes to EEPROM\r\n");
 	print_dbg("ps      : List tasks\r\n");
 	print_dbg("setpin  : Set a GPIO pin to a logic '1' or '0'\r\n");
 	print_dbg("getpin  : Read the logic level from a GPIO pin\r\n");
@@ -523,6 +524,19 @@ static void eedump_command_handler(char **argv, int argc, void* data)
 	}
 }
 
+static void eenull_command_handler(char **argv, int argc, void* data)
+{
+	uint8_t row[EEPROM_PAGE_SIZE];
+
+	memset(row, 0, sizeof(row));
+
+	unsigned long int address;
+	for (address = 0; address < EEPROM_SIZE; address += sizeof(row))
+	{
+		eeprom_write(address, row, sizeof(row));
+	}
+}
+
 static void ps_command_handler(char **argv, int argc, void* data)
 {
 	print_dbg("Name\t\tState\tPri\tStack\tNum\r\n");
@@ -594,6 +608,7 @@ static const struct menu_function menu_functions[] =
 		{ "eeread", eeread_command_handler },
 		{ "eewrite", eewrite_command_handler },
 		{ "eedump", eedump_command_handler },
+		{ "eenull", eenull_command_handler },
 		{ "ps", ps_command_handler },
 		{ "setpin", setpin_command_handler },
 		{ "getpin", getpin_command_handler },
