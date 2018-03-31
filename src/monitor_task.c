@@ -320,7 +320,7 @@ static void read_command_handler(char **argv, int argc, void* data)
 	}
 
 	int bit_width = strtol(argv[1], NULL, 0);
-	long int address = strtol(argv[2], NULL, 0);
+	unsigned long int address = strtoll(argv[2], NULL, 0);
 
 	switch (bit_width)
 	{
@@ -358,8 +358,8 @@ static void write_command_handler(char **argv, int argc, void* data)
 	}
 
 	int bit_width = strtol(argv[1], NULL, 0);
-	long int address = strtol(argv[2], NULL, 0);
-	long int value = strtol(argv[3], NULL, 0);
+	unsigned long int address = strtoll(argv[2], NULL, 0);
+	unsigned long int value = strtoll(argv[3], NULL, 0);
 
 	switch (bit_width)
 	{
@@ -385,7 +385,7 @@ static void write_command_handler(char **argv, int argc, void* data)
 	}
 }
 
-static void dump_hex_row(long int address, uint8_t* row, int len)
+static void dump_hex_row(unsigned long int address, uint8_t* row, int len)
 {
 	print_dbg_hex(address);
 	print_dbg_char(':');
@@ -412,14 +412,14 @@ static void dump_command_handler(char **argv, int argc, void* data)
 		return;
 	}
 
-	long int start_address = strtol(argv[1], NULL, 0);
-	long int end_address = start_address + strtol(argv[2], NULL, 0);
+	unsigned long int start_address = strtoll(argv[1], NULL, 0);
+	unsigned long int end_address = start_address + strtol(argv[2], NULL, 0);
 
 	// Align */
 	start_address &= ~0xf;
 	end_address = (end_address + 0xf) & ~0xf;
 
-	long int address;
+	unsigned long int address;
 	for (address = start_address; address < end_address; address += 16)
 	{
 		uint8_t *dmp_data = (uint8_t*) address;
@@ -436,7 +436,7 @@ static void eeread_command_handler(char **argv, int argc, void* data)
 	}
 
 	int bit_width = strtol(argv[1], NULL, 0);
-	long int address = strtol(argv[2], NULL, 0);
+	unsigned long int address = strtoll(argv[2], NULL, 0);
 
 	switch (bit_width)
 	{
@@ -471,8 +471,8 @@ static void eewrite_command_handler(char **argv, int argc, void* data)
 	}
 
 	int bit_width = strtol(argv[1], NULL, 0);
-	long int address = strtol(argv[2], NULL, 0);
-	long int value = strtol(argv[3], NULL, 0);
+	unsigned long int address = strtoll(argv[2], NULL, 0);
+	unsigned long int value = strtoll(argv[3], NULL, 0);
 
 	switch (bit_width)
 	{
@@ -508,14 +508,14 @@ static void eedump_command_handler(char **argv, int argc, void* data)
 		return;
 	}
 
-	long int start_address = strtol(argv[1], NULL, 0);
-	long int end_address = start_address + strtol(argv[2], NULL, 0);
+	unsigned long int start_address = strtoll(argv[1], NULL, 0);
+	unsigned long int end_address = start_address + strtol(argv[2], NULL, 0);
 
 	// Align */
 	start_address &= ~0xf;
 	end_address = (end_address + 0xf) & ~0xf;
 
-	long int address;
+	unsigned long int address;
 	for (address = start_address; address < end_address; address += sizeof(row))
 	{
 		eeprom_read(address, row, sizeof(row));
