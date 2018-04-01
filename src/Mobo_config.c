@@ -837,7 +837,7 @@ void mobo_clock_division(U32 frequency) {
 
 	if ( (frequency != prev_frequency) || (prev_frequency == FREQ_INVALID) ) { 	// Only run at startup or when things change
 		print_dbg("Frequency changed to ");
-		print_dbg_short_hex(frequency);
+		print_dbg_ulong()(frequency);
 		print_dbg(" Hz\r\n");
 
 		gpio_enable_pin_pull_up(AVR32_PIN_PA03);	// Floating: stock AW with external /2. GND: modded AW with no ext. /2
