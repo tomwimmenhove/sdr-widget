@@ -380,6 +380,7 @@ void PCM1792A_task_init(const Bool uac1) {
 			NULL,
 			configTSK_PCM1792A_PRIORITY,
 			NULL);
+	print_dbg("PCM1792 task created\r\n");
 #endif  // FREERTOS_USED
 }
 
@@ -393,8 +394,6 @@ void pcm1792a_task(void *pvParameters)
 void pcm1792a_task(void)
 #endif
 {
-	print_dbg("PCM1792 task started\r\n");
-
 	spk_vol_usb_L_prev = spk_vol_usb_L;
 	spk_vol_usb_R_prev = spk_vol_usb_R;
 	spk_mute_prev = spk_mute = false;

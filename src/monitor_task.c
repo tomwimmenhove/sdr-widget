@@ -107,9 +107,8 @@ void monitor_task_init()
 				NULL,
 				configTSK_MONITOR_PRIORITY,
 				NULL);
+	print_dbg("Monitor task created\r\n");
 #endif  // FREERTOS_USED
-
-	print_dbg("Monitor ready\r\n");
 }
 
 static const struct variable *find_variable_entry(const struct variable *variables, int n, char *name)
