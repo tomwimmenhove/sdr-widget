@@ -385,6 +385,7 @@ void PCM1792A_task_init(const Bool uac1) {
 
 static S16 spk_vol_usb_L_prev, spk_vol_usb_R_prev;
 static Bool spk_mute_prev;
+static Bool dirty = false;
 
 #ifdef FREERTOS_USED
 void pcm1792a_task(void *pvParameters)
@@ -405,29 +406,32 @@ void pcm1792a_task(void)
 			if (spk_vol_usb_L_prev != spk_vol_usb_L)
 			{
 				uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
-				print_dbg("Volume L: ");
-				print_dbg_char_hex(vol);
-				print_dbg("\r\n");
+//				print_dbg("Volume L: ");
+//				print_dbg_char_hex(vol);
+//				print_dbg("\r\n");
 				pcm1792_set_volume_left(vol);
 				spk_vol_usb_L_prev = spk_vol_usb_L;
+				dirty = true;
 			}
 			if (spk_vol_usb_R_prev != spk_vol_usb_R)
 			{
 				uint8_t vol = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
-				print_dbg("Volume R: ");
-				print_dbg_char_hex(vol);
-				print_dbg("\r\n");
+//				print_dbg("Volume R: ");
+//				print_dbg_char_hex(vol);
+//				print_dbg("\r\n");
 				pcm1792_set_volume_right(vol);
 				spk_vol_usb_R_prev = spk_vol_usb_R;
+				dirty = true;
 			}
 
 			if (spk_mute_prev != spk_mute)
 			{
 				pcm1792_set_mute(spk_mute ? PCM1792A_MUTE_ENABLED : PCM1792A_MUTE_DISABLED);
 
-				print_dbg("Mute: ");
-				print_dbg(spk_mute ? "on\r\n" : "off\r\n");
+//				print_dbg("Mute: ");
+//				print_dbg(spk_mute ? "on\r\n" : "off\r\n");
 				spk_mute_prev = spk_mute;
+				dirty = true;
 			}
 		}
 		else
@@ -437,19 +441,21 @@ void pcm1792a_task(void)
 			   will now be unavailable. */
 			/* Doing this in an external EEPROM now. */
 			//if (spk_vol_usb_L != usb_volume_flash(CH_LEFT, 0, VOL_READ))
-			if (spk_vol_usb_L != (S16) eeprom_get16(feature_msb_vol_L))
+			if (dirty && spk_vol_usb_L != (S16) eeprom_get16(feature_msb_vol_L))
 			{
-				print_dbg("Saving left channel volume to EEPROM\r\n");
+				//print_dbg("Saving left channel volume to EEPROM\r\n");
 				//usb_volume_flash(CH_LEFT, spk_vol_usb_L, VOL_WRITE);
 				eeprom_put16(feature_msb_vol_L, spk_vol_usb_L);
 			}
 			//if (spk_vol_usb_R != usb_volume_flash(CH_RIGHT, 0, VOL_READ))
-			if (spk_vol_usb_R != (S16) eeprom_get16(feature_msb_vol_R))
+			if (dirty && spk_vol_usb_R != (S16) eeprom_get16(feature_msb_vol_R))
 			{
-				print_dbg("Saving right channel volume to EEPROM\r\n");
+				//print_dbg("Saving right channel volume to EEPROM\r\n");
 				//usb_volume_flash(CH_RIGHT, spk_vol_usb_R, VOL_WRITE);
 				eeprom_put16(feature_msb_vol_R, spk_vol_usb_R);
 			}
+
+			dirty = false;
 		}
 	}
 }
