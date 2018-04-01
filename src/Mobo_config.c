@@ -26,6 +26,7 @@
 #include "usb_specific_request.h"
 
 #include "SI5351A.h"
+#include "PCM1792.h"
 
 /*
 #include "rotary_encoder.h"
@@ -707,6 +708,7 @@ void mobo_xo_select(U32 frequency, uint8_t source) {
 
 	if ( (frequency != prev_frequency) || (prev_frequency == FREQ_INVALID) ) { 	// Only run at startup or when things change
 	#if defined(HW_GEN_AB1X)
+		pcm1792_set_os_by_fs(frequency);
 		switch (frequency) {
 			case FREQ_44:
 				if (FEATURE_BOARD_USBI2S)

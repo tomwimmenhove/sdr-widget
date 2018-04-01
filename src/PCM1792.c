@@ -1,6 +1,7 @@
 #include "Mobo_config.h"
 #include "PCM1792.h"
 #include "cycle_counter.h"
+#include "taskPCM1792A.h"
 
 uint8_t register_cache[8] =
 {
@@ -79,3 +80,22 @@ void pcm1792_set_os(uint8_t os)
 	pcm1792_write_register_field(20, PCM1792A_OS_MASK, os, 1);
 }
 
+void pcm1792_set_os_by_fs(int fs)
+{
+	switch (fs)
+	{
+	case FREQ_32:
+	case FREQ_44:
+	case FREQ_48:
+		pcm1792_set_os(PCM1792A_OS_T128);
+		break;
+	case FREQ_88:
+	case FREQ_96:
+		pcm1792_set_os(PCM1792A_OS_T64);
+		break;
+	case FREQ_176:
+	case FREQ_192:
+		pcm1792_set_os(PCM1792A_OS_T32);
+		break;
+	}
+}

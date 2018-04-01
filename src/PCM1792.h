@@ -103,5 +103,7 @@ void pcm1792_set_atld(uint8_t atld);
 void pcm1792_set_fmt(uint8_t fmt);
 void pcm1792_set_dmf(uint8_t dmf);
 void pcm1792_set_dme(uint8_t dme);
+void pcm1792_set_os(uint8_t os);
+void pcm1792_set_os_by_fs(int fs);
 
 #endif // PCM1792_H
