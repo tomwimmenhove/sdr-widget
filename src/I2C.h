@@ -46,6 +46,6 @@ extern xSemaphoreHandle mutexI2C;
 extern void twi_init(void);
 extern uint8_t twi_write_out(uint8_t i2c_address, uint8_t *payload, uint8_t size);
 extern uint8_t twi_read_in(uint8_t i2c_address, uint8_t *data_to_return, uint8_t size);
-
+extern uint8_t twi_read_reg_in(uint8_t i2c_address, uint8_t reg, uint8_t *data_to_return, uint8_t size);
 
 #endif

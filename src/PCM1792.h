@@ -30,7 +30,6 @@
 #define PCM1792A_MUTE_DISABLED	0
 #define PCM1792A_MUTE_ENABLED	1
 
-
 /* register 19 */
 #define PCM1792A_REV_MASK		0x80
 #define PCM1792A_REV_ENABLED	0x00 // Normal output
@@ -58,11 +57,43 @@
 #define PCM1792A_INZD_ENABLED	0x01
 #define PCM1792A_INZD_DISABLED	0x00
 
+// Register 20
+#define PCM1792A_RSV_MASK		0x80
+#define PCM1792A_RSV_ENABLED	0x80
+#define PCM1792A_RSV_DISABLED	0x00
+
+#define PCM1792A_SRST_MASK		0x40
+#define PCM1792A_SRST_ENABLED	0x40
+#define PCM1792A_SRST_DISABLED	0x00
+
+#define PCM1792A_DSD_MASK		0x20
+#define PCM1792A_DSD_ENABLED	0x20
+#define PCM1792A_DSD_DISABLED	0x00
+
+#define PCM1792A_DFTH_MASK		0x10
+#define PCM1792A_DFTH_ENABLED	0x10
+#define PCM1792A_DFTH_DISABLED	0x00
+
+#define PCM1792A_MONO_MASK		0x08
+#define PCM1792A_MONO_ENABLED	0x08
+#define PCM1792A_MONO_DISABLED	0x00
+
+#define PCM1792A_CHSL_MASK		0x04
+#define PCM1792A_CHSL_ENABLED	0x04
+#define PCM1792A_CHSL_DISABLED	0x00
+
+#define PCM1792A_OS_MASK		0x03
+#define PCM1792A_OS_T64			0x00
+#define PCM1792A_OS_T32			0x01
+#define PCM1792A_OS_T128		0x02
+
 // XXX: Other registers to be implemented.
 
 /* Low level API */
 void pcm1792_write_register(uint8_t reg, uint8_t data);
+uint8_t pcm1792_read_register(uint8_t reg);
 void pcm1792_write_register_field(uint8_t reg, uint8_t mask, uint8_t value, int write_to_device);
+void pcm1792_soft_reset();
 
 /* High level API */
 void pcm1792_set_volume_left(uint8_t volume);

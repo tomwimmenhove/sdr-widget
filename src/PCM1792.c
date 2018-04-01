@@ -1,6 +1,6 @@
 #include "Mobo_config.h"
 #include "PCM1792.h"
-
+#include "cycle_counter.h"
 
 uint8_t register_cache[8] =
 {
@@ -17,6 +17,12 @@ void pcm1792_write_register(uint8_t reg, uint8_t data)
 	twi_write_out(PCM1792_I2C_ADDR, d, 2);
 }
 
+uint8_t pcm1792_read_register(uint8_t reg)
+{
+	uint8_t val;
+	twi_read_reg_in(PCM1792_I2C_ADDR, reg, (uint8_t*) &val, 1);
+	return val;
+}
 
 void pcm1792_write_register_field(uint8_t reg, uint8_t mask, uint8_t value, int write_to_device)
 {
@@ -66,5 +72,10 @@ void pcm1792_set_dmf(uint8_t dmf)
 void pcm1792_set_dme(uint8_t dme)
 {
 	pcm1792_write_register_field(18, PCM1792A_DME_MASK, dme, 1);
+}
+
+void pcm1792_set_os(uint8_t os)
+{
+	pcm1792_write_register_field(20, PCM1792A_OS_MASK, os, 1);
 }
 

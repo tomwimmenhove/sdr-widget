@@ -20,6 +20,7 @@
 #include "gpio.h"
 #include "eeprom.h"
 #include "taskPCM1792A.h"
+#include "PCM1792.h"
 
 xSemaphoreHandle line_semaphore;
 
@@ -197,6 +198,18 @@ void var_volusbr_getter(void* data)
 	print_dbg("\r\n");
 }
 
+void var_muteusb_setter(char* value, void* data)
+{
+	spk_mute = strtol(value, NULL, 0);
+	xSemaphoreGive(mutexVolume);
+}
+
+void var_muteusb_getter(void* data)
+{
+	print_dbg_char_hex(spk_mute);
+	print_dbg("\r\n");
+}
+
 static const struct variable variables[] =
 {
 		{ "version", NULL, var_version_getter },
@@ -204,6 +217,7 @@ static const struct variable variables[] =
 		{ "freq", NULL, var_freq_getter },
 		{ "volusbl", var_volusbl_setter, var_volusbl_getter },
 		{ "volusbr", var_volusbr_setter, var_volusbr_getter },
+		{ "muteusb", var_muteusb_setter, var_muteusb_getter },
 };
 static int num_variables = sizeof(variables) / sizeof(struct variable);
 
@@ -289,6 +303,8 @@ static void help_command_handler(char **argv, int argc, void* data)
 	print_dbg("ps      : List tasks\r\n");
 	print_dbg("setpin  : Set a GPIO pin to a logic '1' or '0'\r\n");
 	print_dbg("getpin  : Read the logic level from a GPIO pin\r\n");
+	print_dbg("pcmset  : Set a register in the PCM1792A\r\n");
+	print_dbg("pcmget  : Get a register from the PCM1792A\r\n");
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -580,6 +596,49 @@ static void getpin_command_handler(char **argv, int argc, void* data)
 	print_dbg(level ? "'1'\r\n" : "'0'\r\n");
 }
 
+static void pcmset_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: pcmset <register> <value>\r\n");
+		return;
+	}
+
+	uint8_t reg = strtoll(argv[1], NULL, 0);
+	uint8_t val = strtoll(argv[2], NULL, 0);
+
+	pcm1792_write_register(reg, val);
+}
+
+static void pcmget_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 2)
+	{
+		print_dbg("Usage: pcmget <register>\r\n");
+		return;
+	}
+
+	uint8_t reg = strtoll(argv[1], NULL, 0);
+	uint8_t val = pcm1792_read_register(reg);
+
+	print_dbg_char_hex(val);
+	print_dbg("\r\n");
+}
+
+static void pcmdump_command_handler(char **argv, int argc, void* data)
+{
+	int i;
+	for(i = 16; i <= 22; i++)
+	{
+		uint8_t val = pcm1792_read_register(i);
+
+		print_dbg_ulong(i);
+		print_dbg(": 0x");
+		print_dbg_char_hex(val);
+		print_dbg("\r\n");
+	}
+}
+
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
 	int i;
@@ -612,6 +671,9 @@ static const struct menu_function menu_functions[] =
 		{ "ps", ps_command_handler },
 		{ "setpin", setpin_command_handler },
 		{ "getpin", getpin_command_handler },
+		{ "pcmset", pcmset_command_handler },
+		{ "pcmget", pcmget_command_handler },
+		{ "pcmdump", pcmdump_command_handler },
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 

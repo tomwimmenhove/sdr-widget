@@ -106,4 +106,27 @@ uint8_t twi_read_in(uint8_t i2c_address, uint8_t *data_to_return, uint8_t size)
 	return status;
 }
 
+uint8_t twi_read_reg_in(uint8_t i2c_address, uint8_t reg, uint8_t *data_to_return, uint8_t size)
+{
+	uint8_t status;
 
+	// Wait for I2C port to become free
+	xSemaphoreTake( mutexI2C, portMAX_DELAY );
+
+	twi_package_t packet =
+	{
+		.chip = i2c_address,
+		.addr = reg,
+		.addr_length = 1,
+		.buffer = data_to_return,
+		.length = size
+	};
+
+	// Returns TWI_SUCCESS (0) on successful read
+	status = twi_master_read(MOBO_TWI, &packet);
+
+	// Release I2C port
+	xSemaphoreGive( mutexI2C );
+
+	return status;
+}

@@ -462,7 +462,7 @@ int main(void)
 
 	// Start OS scheduler
 	print_dbg("Starting OS Scheduler\r\n");
-	wdt_enable(10000);
+	wdt_enable(500000);
 	vTaskStartScheduler();
 	portDBG_TRACE("FreeRTOS returned.");
 	return 42;
