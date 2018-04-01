@@ -88,6 +88,7 @@
 #include "device_audio_task.h"
 #include "uac1_device_audio_task.h"
 #include "taskPCM1792A.h"
+#include "PCM1792.h"
 
 
 //_____ M A C R O S ________________________________________________________
@@ -672,6 +673,10 @@ void audio_set_cur(void)
 		if (input_select == MOBO_SRC_UAC1) { // Only mute if appropriate. Perhaps input has changed to NONE before this can execute
 			//spk_mute = TRUE; // mute speaker while changing frequency and oscillator
 			mobo_clear_dac_channel();
+			if (!spk_mute)
+			{
+				pcm1792_set_mute(1);
+			}
 		}
 		if ( (input_select == MOBO_SRC_UAC1) || (input_select == MOBO_SRC_NONE) ) {	// Only change I2S settings if appropriate
 			mobo_xo_select(current_freq.frequency, MOBO_SRC_UAC1);	// Give USB the I2S control with proper MCLK
@@ -686,11 +691,18 @@ void audio_set_cur(void)
 			print_dbg_char_char('=');
 		#endif
 		mobo_clear_dac_channel();
+		if (!spk_mute)
+		{
+			pcm1792_set_mute(1);
+		}
 
 		mobo_xo_select(current_freq.frequency, MOBO_SRC_UAC1); // GPIO XO control and frequency indication
 		mobo_clock_division(current_freq.frequency);	// This is redundant in UAC1, but we attempt restart for good measure!
 #endif
-
+		if (!spk_mute)
+		{
+			pcm1792_set_mute(0);
+		}
 
 
 

@@ -88,6 +88,7 @@
 #include "device_audio_task.h"
 #include "uac2_device_audio_task.h"
 #include "taskPCM1792A.h"
+#include "PCM1792.h"
 #include "semphr.h"
 
 //_____ M A C R O S ________________________________________________________
@@ -225,11 +226,15 @@ void uac2_freq_change_handler() {
 //			mobo_led_select(current_freq.frequency, MOBO_SRC_UAC2); // GPIO frequency indication on front RGB LED
 //		}
 #else
-		spk_mute = TRUE; // mute speaker while changing frequency and oscillator
+		//spk_mute = TRUE; // mute speaker while changing frequency and oscillator
 		#ifdef USB_STATE_MACHINE_DEBUG
 			print_dbg_char_char('=');
 		#endif
 		mobo_clear_dac_channel();
+		if (!spk_mute)
+		{
+			pcm1792_set_mute(1);
+		}
 
 		mobo_xo_select(current_freq.frequency, MOBO_SRC_UAC2); // GPIO XO control and frequency indication
 		mobo_clock_division(current_freq.frequency);
@@ -318,7 +323,11 @@ void uac2_freq_change_handler() {
 			FB_rate_nominal = FB_rate + FB_NOMINAL_OFFSET; // BSB 20131115 Record FB_rate as it was set by control system;
 		}
 
-		spk_mute = FALSE;
+		//spk_mute = FALSE;
+		if (!spk_mute)
+		{
+			pcm1792_set_mute(0);
+		}
 		// reset freq_changed flag
 		freq_changed = FALSE;
 	}
