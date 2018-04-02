@@ -498,6 +498,7 @@ void uac1_device_audio_task(void *pvParameters)
 								time_to_calculate_gap = -1;				// Immediate gap re-calculation
 								skip_indicate = 1;
 								LED_On(LED0);							// Indicate skipping on module LED
+								spk_usb_sample_skip++;
 
 	#ifdef USB_STATE_MACHINE_DEBUG
 								print_dbg_char('s');
@@ -510,6 +511,7 @@ void uac1_device_audio_task(void *pvParameters)
 								time_to_calculate_gap = -1;				// Immediate gap re-calculation
 								skip_indicate = 1;
 								LED_On(LED1);							// Indicate skipping on module LED
+								spk_usb_sample_insert++;
 
 	#ifdef USB_STATE_MACHINE_DEBUG
 								print_dbg_char('i');

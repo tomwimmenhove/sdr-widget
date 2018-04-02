@@ -65,6 +65,8 @@
 
 volatile U32 spk_usb_heart_beat = 0, old_spk_usb_heart_beat = 0;
 volatile U32 spk_usb_sample_counter = 0, old_spk_usb_sample_counter = 0;
+volatile U32 spk_usb_sample_skip = 0, spk_usb_sample_insert = 0;
+S32 FB_error_acc = 0;	// BSB 20131102 Accumulated error for skip/insert
 xSemaphoreHandle mutexVolume;
 
 

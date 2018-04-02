@@ -159,7 +159,6 @@ void uac2_device_audio_task(void *pvParameters)
 	U8 skip_enable = 0;
 	U8 skip_indicate = 0;	// Should we show skipping on module LEDs?
 	U16 samples_to_transfer_OUT = 1; // Default value 1. Skip:0. Insert:2
-	S32 FB_error_acc = 0;	// BSB 20131102 Accumulated error for skip/insert
 	U8 sample_HSB;
 	U8 sample_MSB;
 	U8 sample_SB;
@@ -542,6 +541,7 @@ void uac2_device_audio_task(void *pvParameters)
 								time_to_calculate_gap = -1;				// Immediate gap re-calculation
 								skip_indicate = 1;
 								LED_On(LED0);							// Indicate skipping on module LED
+								spk_usb_sample_skip++;
 	#ifdef USB_STATE_MACHINE_DEBUG
 	//							print_dbg_char('s');
 	#endif
@@ -552,6 +552,7 @@ void uac2_device_audio_task(void *pvParameters)
 								time_to_calculate_gap = -1;				// Immediate gap re-calculation
 								skip_indicate = 1;
 								LED_On(LED1);							// Indicate skipping on module LED
+								spk_usb_sample_insert++;
 	#ifdef USB_STATE_MACHINE_DEBUG
 	//							print_dbg_char('i');
 	#endif
@@ -565,6 +566,7 @@ void uac2_device_audio_task(void *pvParameters)
 								time_to_calculate_gap = -1;				// Immediate gap re-calculation
 								skip_indicate = 1;
 								LED_On(LED0);							// Indicate skipping on module LED
+								spk_usb_sample_skip++;
 	#ifdef USB_STATE_MACHINE_DEBUG
 	//							print_dbg_char('s');
 	#endif
@@ -575,6 +577,7 @@ void uac2_device_audio_task(void *pvParameters)
 								time_to_calculate_gap = -1;				// Immediate gap re-calculation
 								skip_indicate = 1;
 								LED_On(LED1);							// Indicate skipping on module LED
+								spk_usb_sample_insert++;
 	#ifdef USB_STATE_MACHINE_DEBUG
 	//							print_dbg_char('i');
 	#endif

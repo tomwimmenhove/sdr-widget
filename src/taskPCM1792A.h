@@ -137,6 +137,8 @@ extern volatile int dac_must_clear;	// uacX_device_audio_task.c must clear the c
 
 extern volatile U32 spk_usb_heart_beat, old_spk_usb_heart_beat;
 extern volatile U32 spk_usb_sample_counter, old_spk_usb_sample_counter;
+extern volatile U32 spk_usb_sample_skip, spk_usb_sample_insert;
+extern S32 FB_error_acc;	// BSB 20131102 Accumulated error for skip/insert
 
 // BSB 20131201 attempting improved playerstarted detection
 extern volatile S32 usb_buffer_toggle;

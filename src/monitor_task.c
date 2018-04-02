@@ -304,6 +304,7 @@ static void help_command_handler(char **argv, int argc, void* data)
 	print_dbg("getpin  : Read the logic level from a GPIO pin\r\n");
 	print_dbg("pcmset  : Set a register in the PCM1792A\r\n");
 	print_dbg("pcmget  : Get a register from the PCM1792A\r\n");
+	print_dbg("sstat   : Show sample skipping/inserting stats\r\n");
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -638,6 +639,25 @@ static void pcmdump_command_handler(char **argv, int argc, void* data)
 	}
 }
 
+static void sstat_command_handler(char **argv, int argc, void* data)
+{
+	print_dbg("USB heart beat   : ");
+	print_dbg_ulong(spk_usb_heart_beat);
+	print_dbg("\r\n");
+	print_dbg("Sample count     : ");
+	print_dbg_ulong(spk_usb_sample_counter);
+	print_dbg("\r\n");
+	print_dbg("Samples skipped  : ");
+	print_dbg_ulong(spk_usb_sample_skip);
+	print_dbg("\r\n");
+	print_dbg("samples inserted : ");
+	print_dbg_ulong(spk_usb_sample_insert);
+	print_dbg("\r\n");
+	print_dbg("Current error acc: ");
+	print_dbg_ulong(FB_error_acc);
+	print_dbg("\r\n");
+}
+
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
 	int i;
@@ -673,6 +693,7 @@ static const struct menu_function menu_functions[] =
 		{ "pcmset", pcmset_command_handler },
 		{ "pcmget", pcmget_command_handler },
 		{ "pcmdump", pcmdump_command_handler },
+		{ "sstat", sstat_command_handler },
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 
