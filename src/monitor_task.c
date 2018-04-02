@@ -315,17 +315,13 @@ static void reboot_command_handler(char **argv, int argc, void* data)
 
 static void dfu_command_handler(char **argv, int argc, void* data)
 {
-	print_dbg("Erasing flash\r\n");
+	print_dbg("Setting fuses\r\n");
 	/* Reset into Bootloader */
 	flashc_erase_gp_fuse_bit(31, true);
 	flashc_write_gp_fuse_bit(31, true);
 
-	print_dbg("Disabling interrupts\r\n");
-	DISABLE_ALL_INTERRUPTS();
-
 	print_dbg("Rebooting into DFU in 500ms\r\n");
-	wdt_enable(500000);
-	while (1);				// Wait for it to fire
+	widget_reset();
 }
 
 static void read_command_handler(char **argv, int argc, void* data)
