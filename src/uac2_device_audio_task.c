@@ -140,7 +140,8 @@ void uac2_device_audio_task_init(U8 ep_in, U8 ep_out, U8 ep_out_fb)
 				NULL);
 }
 
-
+volatile U32 *ep_audio_out_ptr;
+#define read_audio_sample() __builtin_bswap32(*ep_audio_out_ptr)
 
 //!
 //! @brief Entry point of the device Audio task management
@@ -582,21 +583,13 @@ void uac2_device_audio_task(void *pvParameters)
 
 					} // end if skip_enable
 
+					ep_audio_out_ptr = pep_fifo[EP_AUDIO_OUT].u32ptr;
 					silence_det_L = 0;						// We're looking for non-zero or non-static audio data..
 					silence_det_R = 0;						// We're looking for non-zero or non-static audio data..
 					for (i = 0; i < num_samples; i++) {
-						sample_HSB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						SB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						sample_SB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						sample_MSB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						sample_L = (((U32) sample_MSB) << 24) + (((U32)sample_SB) << 16) + (((U32) SB) << 8) + sample_HSB;
+						sample_L = read_audio_sample();
+						sample_R = read_audio_sample();
 						silence_det_L |= sample_L;
-
-						sample_HSB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						SB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						sample_SB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						sample_MSB = Usb_read_endpoint_data(EP_AUDIO_OUT, 8);
-						sample_R = (((U32) sample_MSB) << 24) + (((U32)sample_SB) << 16) + (((U32) SB) << 8) + sample_HSB;
 						silence_det_R |= sample_R;
 
 						if ( (silence_det_L == sample_L) && (silence_det_R == sample_R) )
