@@ -532,6 +532,8 @@ void uac1_device_audio_task(void *pvParameters)
 						// ON this particular AB-1.2, the Left channel is more accurate at this particular measurement. We'll wait with further
 						// calibration. FB_rate_initial is verified. Value of 1<<16 = 21mV
 
+						spk_usb_sample_counter += num_samples; 	// track the num of samples received
+
 						silence_det_L = 0;						// We're looking for non-zero or non-static audio data..
 						silence_det_R = 0;						// We're looking for non-zero or non-static audio data..
 						for (i = 0; i < num_samples; i++) {
