@@ -107,7 +107,7 @@ static void x_image_task_init(void) {
   vStartTaskMoboCtrl();
   // vStartTaskEXERCISE( tskIDLE_PRIORITY );
   PCM1792A_task_init(TRUE);
-#ifdef USBHID
+#ifdef USBHID_TASK
   device_mouse_hid_task_init(UAC1_EP_HID_RX, UAC1_EP_HID_TX);
 #else
 	monitor_task_init();

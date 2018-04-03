@@ -18,6 +18,7 @@
 #define HW_GEN_AB1X
 #define BOARD SDRwdgtLite
 #define FREERTOS_USED
+#define USBHID
 
 
 #endif // DEFINEHELPER

@@ -21,6 +21,8 @@
 #include "eeprom.h"
 #include "taskPCM1792A.h"
 #include "PCM1792.h"
+#include "usb_drv.h"
+#include "conf_usb.h"
 
 xSemaphoreHandle line_semaphore;
 
@@ -305,6 +307,9 @@ static void help_command_handler(char **argv, int argc, void* data)
 	print_dbg("pcmset  : Set a register in the PCM1792A\r\n");
 	print_dbg("pcmget  : Get a register from the PCM1792A\r\n");
 	print_dbg("sstat   : Show sample skipping/inserting stats\r\n");
+#ifdef USBHID
+	print_dbg("hid     : Send HID report\r\n");
+#endif
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -654,6 +659,34 @@ static void sstat_command_handler(char **argv, int argc, void* data)
 	print_dbg("\r\n");
 }
 
+#ifdef USBHID
+static void hid_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 4)
+	{
+		print_dbg("Usage: hid <byte0> <byte1> <byte2)\r\n");
+		return;
+	}
+
+	uint8_t ReportByte0 = strtoll(argv[1], NULL, 0);
+	uint8_t ReportByte1 = strtoll(argv[2], NULL, 0);
+	uint8_t ReportByte2 = strtoll(argv[3], NULL, 0);
+
+	if (Is_usb_in_ready(UAC1_EP_HID_TX))
+	{
+	   Usb_reset_endpoint_fifo_access(UAC1_EP_HID_TX);
+	   Usb_write_endpoint_data(UAC1_EP_HID_TX, 8, ReportByte0);
+	   Usb_write_endpoint_data(UAC1_EP_HID_TX, 8, ReportByte1);
+	   Usb_write_endpoint_data(UAC1_EP_HID_TX, 8, ReportByte2);
+	   Usb_ack_in_ready_send(UAC1_EP_HID_TX);
+	}
+	else
+	{
+		print_dbg("fail\r\n");
+	}
+}
+#endif
+
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
 	int i;
@@ -690,6 +723,9 @@ static const struct menu_function menu_functions[] =
 		{ "pcmget", pcmget_command_handler },
 		{ "pcmdump", pcmdump_command_handler },
 		{ "sstat", sstat_command_handler },
+#ifdef USBHID
+		{ "hid", hid_command_handler },
+#endif
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 

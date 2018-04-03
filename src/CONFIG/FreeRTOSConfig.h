@@ -135,7 +135,7 @@ to exclude the API function. */
 #define configDBG_USART_TX_PIN        AVR32_USART1_TXD_0_2_PIN
 #define configDBG_USART_TX_FUNCTION   AVR32_USART1_TXD_0_2_FUNCTION
 #define configDBG_USART_IRQ           AVR32_USART1_IRQ
-#ifdef USBHID
+#ifdef USBHID_TASK
 #define configDBG_USART_BAUDRATE      57600
 #else
 #define configDBG_USART_BAUDRATE      115200
