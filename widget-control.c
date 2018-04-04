@@ -118,6 +118,7 @@ int find_feature_value(int index, char *value) {
 #define DG8SAQ_PRODUCT_ID     0x05dc
 #define AUDIO_VENDOR_ID		  0x16c0		//!  Internal Lab use
 #define AUDIO_VENDOR_ID_3	  0x16d0
+#define AUDIO_VENDOR_ID_4	  0x1209	// NBSDAC
 #define AUDIO_PRODUCT_ID      0x03e8
 #define AUDIO_PRODUCT_ID_UAC1 0x03e9        // BSB 20120426
 #define HPSDR_VENDOR_ID       0xfffe		//! Ozy Device
@@ -136,6 +137,8 @@ int find_feature_value(int index, char *value) {
 #define AUDIO_PRODUCT_ID_15   0x075F 		//!vendorid3 QNKTC future use UAC2
 #define AUDIO_PRODUCT_ID_16   0x098B 		//!vendorid3 AMB UAC1
 #define AUDIO_PRODUCT_ID_17   0x098C 		//!vendorid3 AMB UAC2
+#define AUDIO_PRODUCT_ID_18   0x8242		// NBSDAC UAC1
+#define AUDIO_PRODUCT_ID_19   0x8243		// NBSDAC UAC2
 
 char *usb_serial_id = NULL;
 libusb_device_handle *usb_handle;
@@ -206,6 +209,8 @@ libusb_device_handle *find_device(int list_all) {
 			(desc.idVendor == AUDIO_VENDOR_ID_3 && desc.idProduct == AUDIO_PRODUCT_ID_15) ||
 			(desc.idVendor == AUDIO_VENDOR_ID_3 && desc.idProduct == AUDIO_PRODUCT_ID_16) ||
 			(desc.idVendor == AUDIO_VENDOR_ID_3 && desc.idProduct == AUDIO_PRODUCT_ID_17) ||
+			(desc.idVendor == AUDIO_VENDOR_ID_4 && desc.idProduct == AUDIO_PRODUCT_ID_18) ||
+			(desc.idVendor == AUDIO_VENDOR_ID_4 && desc.idProduct == AUDIO_PRODUCT_ID_19) ||
 			(desc.idVendor == HPSDR_VENDOR_ID && desc.idProduct == HPSDR_PRODUCT_ID)) {
 			libusb_device_handle *h;
 			int status;

@@ -174,12 +174,12 @@
     #define AUDIO_PRODUCT_ID_13   0x098b	//!  AMB	UAC1 PID
     #define AUDIO_PRODUCT_ID_14   0x098c	//!  AMB	UAC2 PID
   #elif defined (FEATURE_PRODUCT_NBSDAC) // NBS-DAC-192/24
-//    #define AUDIO_VENDOR_ID       0x1642	//!  TWE	VID
-//    #define AUDIO_PRODUCT_ID_15   0x0042	//!  TWE	UAC1 PID
-//    #define AUDIO_PRODUCT_ID_16   0x0043	//!  TWE	UAC2 PID
-    #define AUDIO_VENDOR_ID       0x16d0	//!  AB-1.x	VID
-    #define AUDIO_PRODUCT_ID_15   0x075c	//!  AB-1.x	UAC1 PID
-    #define AUDIO_PRODUCT_ID_16   0x075d	//!  AB-1.x	UAC2 PID
+    #define AUDIO_VENDOR_ID       0x1209	//!  OpenMoko
+    #define AUDIO_PRODUCT_ID_15   0x8242	//!  TWE	UAC1 PID
+    #define AUDIO_PRODUCT_ID_16   0x8243	//!  TWE	UAC2 PID
+//    #define AUDIO_VENDOR_ID       0x16d0	//!  AB-1.x	VID
+//    #define AUDIO_PRODUCT_ID_15   0x075c	//!  AB-1.x	UAC1 PID
+//    #define AUDIO_PRODUCT_ID_16   0x075d	//!  AB-1.x	UAC2 PID
   #else
     #error No recognized FEATURE_PRODUCT... is defined in Makefile, aborting.
   #endif
