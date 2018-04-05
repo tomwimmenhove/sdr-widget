@@ -23,6 +23,7 @@
 #include "PCM1792.h"
 #include "usb_drv.h"
 #include "conf_usb.h"
+#include "SI5351A.h"
 
 xSemaphoreHandle line_semaphore;
 
@@ -211,6 +212,19 @@ void var_muteusb_getter(void* data)
 	print_dbg("\r\n");
 }
 
+void var_xcl_setter(char* value, void* data)
+{
+	uint8_t val = strtol(value, NULL, 0);
+	SI5351A_write_register(SI5351A_XTAL_CL_REG, val);
+	eeprom_put8(eeprom_entry_xcl, val);
+}
+
+void var_xcl_getter(void* data)
+{
+	print_dbg_char_hex(SI5351A_read_register(SI5351A_XTAL_CL_REG));
+	print_dbg("\r\n");
+}
+
 static const struct variable variables[] =
 {
 		{ "version", NULL, var_version_getter },
@@ -219,6 +233,7 @@ static const struct variable variables[] =
 		{ "volusbl", var_volusbl_setter, var_volusbl_getter },
 		{ "volusbr", var_volusbr_setter, var_volusbr_getter },
 		{ "muteusb", var_muteusb_setter, var_muteusb_getter },
+		{ "xcl", var_xcl_setter, var_xcl_getter },
 };
 static int num_variables = sizeof(variables) / sizeof(struct variable);
 

@@ -1,6 +1,8 @@
 #ifndef EEPROM_H
 #define EEPROM_H
 
+#include "eeprom_entries.h"
+
 #define EEPROM_I2C_ADDR				0x50
 #define EEPROM_I2C_ADDR_GET_MSB(x)	(((x) >> 8) & 0x03)
 #define EEPROM_I2C_GET_ADDR(x)		((EEPROM_I2C_ADDR) | (EEPROM_I2C_ADDR_GET_MSB(x)))

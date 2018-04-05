@@ -296,8 +296,8 @@ void PCM1792A_task_init(const Bool uac1) {
 
 	//spk_vol_usb_L = usb_volume_flash(CH_LEFT, 0, VOL_READ);
 	//spk_vol_usb_R = usb_volume_flash(CH_RIGHT, 0, VOL_READ);
-	spk_vol_usb_L = eeprom_get16(feature_msb_vol_L);
-	spk_vol_usb_R = eeprom_get16(feature_msb_vol_R);
+	spk_vol_usb_L = eeprom_get16(eeprom_entry_volume_left);
+	spk_vol_usb_R = eeprom_get16(eeprom_entry_volume_right);
 	if (spk_vol_usb_L > VOL_MAX || spk_vol_usb_L < VOL_MIN)
 	{
 		spk_vol_usb_L = VOL_DEFAULT;
@@ -442,18 +442,18 @@ void pcm1792a_task(void)
 			   will now be unavailable. */
 			/* Doing this in an external EEPROM now. */
 			//if (spk_vol_usb_L != usb_volume_flash(CH_LEFT, 0, VOL_READ))
-			if (dirty && spk_vol_usb_L != (S16) eeprom_get16(feature_msb_vol_L))
+			if (dirty && spk_vol_usb_L != (S16) eeprom_get16(eeprom_entry_volume_left))
 			{
 				//print_dbg("Saving left channel volume to EEPROM\r\n");
 				//usb_volume_flash(CH_LEFT, spk_vol_usb_L, VOL_WRITE);
-				eeprom_put16(feature_msb_vol_L, spk_vol_usb_L);
+				eeprom_put16(eeprom_entry_volume_left, spk_vol_usb_L);
 			}
 			//if (spk_vol_usb_R != usb_volume_flash(CH_RIGHT, 0, VOL_READ))
-			if (dirty && spk_vol_usb_R != (S16) eeprom_get16(feature_msb_vol_R))
+			if (dirty && spk_vol_usb_R != (S16) eeprom_get16(eeprom_entry_volume_right))
 			{
 				//print_dbg("Saving right channel volume to EEPROM\r\n");
 				//usb_volume_flash(CH_RIGHT, spk_vol_usb_R, VOL_WRITE);
-				eeprom_put16(feature_msb_vol_R, spk_vol_usb_R);
+				eeprom_put16(eeprom_entry_volume_right, spk_vol_usb_R);
 			}
 
 			dirty = false;
