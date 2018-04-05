@@ -325,6 +325,8 @@ static void help_command_handler(char **argv, int argc, void* data)
 #ifdef USBHID
 	print_dbg("hid     : Send HID report\r\n");
 #endif
+	print_dbg("i2cset  : Set an I2C register\r\n");
+	print_dbg("i2cget  : Get an I2C register\r\n");
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -679,7 +681,7 @@ static void hid_command_handler(char **argv, int argc, void* data)
 {
 	if (argc != 4)
 	{
-		print_dbg("Usage: hid <byte0> <byte1> <byte2)\r\n");
+		print_dbg("Usage: hid <byte0> <byte1> <byte2\r\n");
 		return;
 	}
 
@@ -701,6 +703,53 @@ static void hid_command_handler(char **argv, int argc, void* data)
 	}
 }
 #endif
+
+static void i2cset_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 4)
+	{
+		print_dbg("Usage: i2cset <address> <register> <value\r\n");
+		return;
+	}
+
+	uint8_t i2c_address = strtoll(argv[1], NULL, 0);
+	uint8_t reg = strtoll(argv[2], NULL, 0);
+	uint8_t val = strtoll(argv[3], NULL, 0);
+
+	uint8_t d[2] = { reg, val, };
+	if (twi_write_out(i2c_address, d, 2) == 0)
+	{
+		print_dbg("ACK\r\n");
+	}
+	else
+	{
+		print_dbg("NACK\r\n");
+	}
+}
+
+static void i2cget_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: i2cget <address> <register>\r\n");
+		return;
+	}
+
+	uint8_t i2c_address = strtoll(argv[1], NULL, 0);
+	uint8_t reg = strtoll(argv[2], NULL, 0);
+
+	uint8_t val;
+	if (twi_read_reg_in(i2c_address, reg, (uint8_t*) &val, 1) == 0)
+	{
+		print_dbg("ACK: ");
+		print_dbg_char_hex(val);
+		print_dbg("\r\n");
+	}
+	else
+	{
+		print_dbg("NACK\r\n");
+	}
+}
 
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
@@ -741,6 +790,8 @@ static const struct menu_function menu_functions[] =
 #ifdef USBHID
 		{ "hid", hid_command_handler },
 #endif
+		{ "i2cset", i2cset_command_handler },
+		{ "i2cget", i2cget_command_handler },
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 
