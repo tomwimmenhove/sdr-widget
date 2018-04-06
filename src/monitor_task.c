@@ -326,6 +326,12 @@ static void help_command_handler(char **argv, int argc, void* data)
 #endif
 	print_dbg("i2cset  : Set an I2C register\r\n");
 	print_dbg("i2cget  : Get an I2C register\r\n");
+	print_dbg("fset    : Set a feature value\r\n");
+	print_dbg("fget    : Get a feature value\r\n");
+	print_dbg("fdump   : List all feature values\r\n");
+	print_dbg("fsave   : Save current feature values to NVRAM\r\n");
+	print_dbg("fload   : Load feature values from NVRAM\r\n");
+	print_dbg("freset  : Reset to default feature values\r\n");
 }
 
 static void reboot_command_handler(char **argv, int argc, void* data)
@@ -750,6 +756,77 @@ static void i2cget_command_handler(char **argv, int argc, void* data)
 	}
 }
 
+static void fset_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 3)
+	{
+		print_dbg("Usage: fset <index> <value\r\n");
+		return;
+	}
+
+	uint8_t index = strtoll(argv[1], NULL, 0);
+	uint8_t value = strtoll(argv[2], NULL, 0);
+
+	features[index] = value;
+}
+
+static void fget_command_handler(char **argv, int argc, void* data)
+{
+	if (argc != 2)
+	{
+		print_dbg("Usage: fget <index>\r\n");
+		return;
+	}
+
+	uint8_t index = strtoll(argv[1], NULL, 0);
+
+	print_dbg_char_hex(features[index]);
+	print_dbg("\r\n");
+}
+
+static void fdump_command_handler(char **argv, int argc, void* data)
+{
+	int len = feature_end_index;
+	int i = 0;
+
+    while (len > 0)
+    {
+    	int l = len > 16 ? 16 : len;
+
+    	dump_hex_row(i, &features[i], l);
+
+    	len -= l;
+    	i += l;
+    }
+}
+
+static void fsave_command_handler(char **argv, int argc, void* data)
+{
+#ifdef EXTERNAL_EEPROM
+	  eeprom_write(0, (uint8_t*) features, sizeof(features));
+#else
+	  flashc_memcpy((void *)&features_nvram, &features, sizeof(features), TRUE);
+#endif
+}
+
+static void fload_command_handler(char **argv, int argc, void* data)
+{
+#ifdef EXTERNAL_EEPROM
+	  eeprom_read(0, (uint8_t*) &features, sizeof(features));
+#else
+	  memcpy(&features, &features_nvram, sizeof(features));
+#endif
+}
+
+static void freset_command_handler(char **argv, int argc, void* data)
+{
+#ifdef EXTERNAL_EEPROM
+	  eeprom_write(0, (uint8_t*) features_default, sizeof(features));
+#else
+	  flashc_memcpy((void *)&features_nvram, &features_default, sizeof(features), TRUE);
+#endif
+}
+
 static const struct menu_function *find_menu_entry(const struct menu_function *menu_functions, int n, char *name)
 {
 	int i;
@@ -791,6 +868,12 @@ static const struct menu_function menu_functions[] =
 #endif
 		{ "i2cset", i2cset_command_handler },
 		{ "i2cget", i2cget_command_handler },
+		{ "fset", fset_command_handler },
+		{ "fget", fget_command_handler },
+		{ "fdump", fdump_command_handler },
+		{ "fsave", fsave_command_handler },
+		{ "fload", fload_command_handler },
+		{ "freset", freset_command_handler },
 };
 static int num_commands = sizeof(menu_functions) / sizeof(struct menu_function);
 

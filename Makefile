@@ -59,7 +59,7 @@ AUDIO_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_usbi2s \
 	-DFEATURE_LCD_DEFAULT=feature_lcd_none \
 	-DFEATURE_LOG_DEFAULT=feature_log_none \
 	-DFEATURE_FILTER_DEFAULT=feature_filter_fir \
-	-DFEATURE_QUIRK_DEFAULT=feature_quirk_ptest \
+	-DFEATURE_QUIRK_DEFAULT=feature_quirk_none \
 	-DFEATURE_XTAL_CL_DEFAULT=SI5351A_XTAL_CL10PF \
 	-DFEATURE_PRODUCT_NBSDAC \
 	-DVDD_SENSE \
@@ -73,6 +73,7 @@ AUDIO_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_usbi2s \
 
 #	-DFEATURE_PRODUCT_AB1x \
 #	-DUSB_STATE_MACHINE_DEBUG \
+#	-DFEATURE_QUIRK_DEFAULT=feature_quirk_ptest \
 #	-DFEATURE_QUIRK_DEFAULT=feature_quirk_none \
 
 # Choose wisely:

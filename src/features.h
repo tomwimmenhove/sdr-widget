@@ -57,6 +57,7 @@ typedef enum {
 		"log",										\
 		"filter",									\
 		"quirk",									\
+		"xtal_cl"									\
 		"msb_vol_L",								\
 		"lsb_vol_L",								\
 		"msb_vol_R",								\

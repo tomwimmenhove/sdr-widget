@@ -21,6 +21,7 @@ const char usage[] = {
 	"         -r = reboot the widget.\n"
 	"         -s = set the feature values in the widget nvram.\n"
 	"         -u serialId = open the device with the specified serialId.\n"
+	"         -p = erase flash and reboot into DFU\n"
 	"Only -s and -u take values.\n"
 	"The -s option takes values in the form printed by -d or -g or -m.\n"
 	"The acceptable values for each feature are listed by -l.\n"
@@ -376,15 +377,26 @@ int get_all_devices() {
 	return finish(0);
 }
 
+char* feature_name(char* buf, int nbuf, int feature)
+{
+	if (feature < feature_end_values)
+	{
+		return true_feature_value_names[feature];
+	}
+	snprintf(buf, nbuf, "%d", feature);
+
+	return buf;
+}
+
 /*
 ** functions
 */
 void print_all_features(uint8_t *fp) {
 	int j;
+	char buf[256];
 	fprintf(stdout, "%d %d", fp[true_feature_major_index], fp[true_feature_minor_index]);
 	for (j = true_feature_minor_index+1; j < true_feature_end_index; j += 1) {
-		fprintf(stdout, " %s", true_feature_value_names[fp[j]]);
-//		fprintf(stdout, " 0x%02x", fp[j]);
+		fprintf(stdout, " %s", feature_name(buf, sizeof(buf), fp[j]));
 	}
 	fprintf(stdout, "\n");
 }
