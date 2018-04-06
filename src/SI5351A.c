@@ -4,6 +4,7 @@
 #include "SI5351A_24MHz.h"
 #include "I2C.h"
 #include "eeprom.h"
+#include "features.h"
 
 void SI5351A_write_register(uint8_t reg, uint8_t data)
 {
@@ -39,6 +40,5 @@ void SI5351A_set_regs_preset(int preset)
 		break;
 	}
 
-	uint8_t xcl = eeprom_get8(eeprom_entry_xcl);
-	SI5351A_write_register(SI5351A_XTAL_CL_REG, xcl);
+	SI5351A_write_register(SI5351A_XTAL_CL_REG, FEATURE_XTAL_CL);
 }

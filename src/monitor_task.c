@@ -216,7 +216,6 @@ void var_xcl_setter(char* value, void* data)
 {
 	uint8_t val = strtol(value, NULL, 0);
 	SI5351A_write_register(SI5351A_XTAL_CL_REG, val);
-	eeprom_put8(eeprom_entry_xcl, val);
 }
 
 void var_xcl_getter(void* data)

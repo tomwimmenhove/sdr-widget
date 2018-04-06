@@ -14,12 +14,16 @@
 
 #include "features.h"
 #include "widget.h"
+#include "eeprom.h"
+#include "SI5351A.h"
 
+#ifndef EXTERNAL_EEPROM
 // Set up NVRAM (EEPROM) storage
 #if defined (__GNUC__)
 __attribute__((__section__(".userpage")))
 #endif
 features_t features_nvram;
+#endif
 
 features_t features = { FEATURES_DEFAULT };
 const features_t features_default = { FEATURES_DEFAULT };
@@ -38,7 +42,12 @@ static void feature_factory_reset_handler(void) {
 	// set the major and minor version numbers to 0 in the nvram
 	// this value cannot happen naturally, so the image initialized
 	// version will be copied to nvram on the next reset
+#ifdef EXTERNAL_EEPROM
+	eeprom_put8(0, 0);
+	eeprom_put8(1, 0); // ??
+#else
 	flashc_memset8((void *)&features_nvram, 0, 2, TRUE);
+#endif
 }
 
 //
@@ -49,15 +58,22 @@ void features_init() {
 
   // BSB: Also force factory default settings when quirk_ptest is set in flash. That
   // means quirk_ptest is overwritten by whatever was was compiled in as defaults
-
 // BSB 20120430 force defaults into flash during PROD_TEST. May need to program quirk_ptest into flash manually, after flashing
 // Code line used to be: if( FEATURE_MAJOR != FEATURE_MAJOR_NVRAM || FEATURE_MINOR != FEATURE_MINOR_NVRAM ) {
 // BUMMER: that's looking in the defaults! Must look in nvram if( (FEATURE_PROD_TEST_ON) || (FEATURE_MAJOR != FEATURE_MAJOR_NVRAM) || (FEATURE_MINOR != FEATURE_MINOR_NVRAM) ) {
   if( (feature_get_nvram(feature_quirk_index) == feature_quirk_ptest) || (FEATURE_MAJOR != FEATURE_MAJOR_NVRAM) || (FEATURE_MINOR != FEATURE_MINOR_NVRAM) ) {
 	  widget_startup_log_line("reset feature nvram");
+#ifdef EXTERNAL_EEPROM
+	  eeprom_write(0, (uint8_t*) features, sizeof(features));
+#else
 	  flashc_memcpy((void *)&features_nvram, &features, sizeof(features), TRUE);
+#endif
   } else {
+#ifdef EXTERNAL_EEPROM
+	  eeprom_read(0, (uint8_t*) &features, sizeof(features));
+#else
 	  memcpy(&features, &features_nvram, sizeof(features));
+#endif
   }
   // Register a factory reset handler
   widget_factory_reset_handler_register(feature_factory_reset_handler);
@@ -103,14 +119,23 @@ uint8_t feature_set_nvram(uint8_t index, uint8_t value)  {
 //	if ( index > feature_minor_index && index < feature_end_index && value < feature_end_values ) {
 //  BSB 20160316 removed feature_end_values check to allow for generic content
 	if ( index > feature_minor_index && index < feature_end_index ) {
+#ifdef EXTERNAL_EEPROM
+		eeprom_put8(index, value);
+		return eeprom_get8(index);
+#else
 		flashc_memset8((void *)&features_nvram[index], value, sizeof(uint8_t), TRUE);
 		return features_nvram[index];
+#endif
 	} else
 		return 0xFF;
 }
 
 uint8_t feature_get_nvram(uint8_t index)  {
+#ifdef EXTERNAL_EEPROM
+	return index < feature_end_index ? eeprom_get8(index) : 0xFF;
+#else
 	return index < feature_end_index ? features_nvram[index] : 0xFF;
+#endif
 }
 
 uint8_t feature_get_default(uint8_t index) {

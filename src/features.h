@@ -37,6 +37,7 @@ typedef enum {
   feature_log_index,			// startup log display timing
   feature_filter_index,			// setting of filter
   feature_quirk_index,			// setting of various quirks
+  feature_xtal_cl,				// X-tal load capacitance
   feature_msb_vol_L,			// left volume control, msb of usb value
   feature_lsb_vol_L,			// left volume control, lsb
   feature_msb_vol_R,			// right volume control, msb
@@ -172,7 +173,11 @@ typedef enum {
 	
 typedef uint8_t features_t[feature_end_index];
 
-extern features_t features_nvram, features;
+#ifndef EXTERNAL_EEPROM
+extern features_t features_nvram;
+#endif
+
+extern features_t features;
 extern const features_t features_default;
 
 //
@@ -183,10 +188,21 @@ extern const features_t features_default;
 //
 
 #define FEATURE_MAJOR					(features[feature_major_index])
+#ifdef EXTERNAL_EEPROM
+#define FEATURE_MAJOR_NVRAM				(eeprom_get8(feature_major_index))
+#else
 #define FEATURE_MAJOR_NVRAM				(features_nvram[feature_major_index])
+#endif
 
 #define FEATURE_MINOR					(features[feature_minor_index])
+
+#ifdef EXTERNAL_EEPROM
+#define FEATURE_MINOR_NVRAM				(eeprom_get8(feature_minor_index))
+#else
 #define FEATURE_MINOR_NVRAM				(features_nvram[feature_minor_index])
+#endif
+
+#define FEATURE_XTAL_CL					(features[feature_xtal_cl])
 
 #define FEATURE_BOARD_NONE				(features[feature_board_index] == (uint8_t)feature_board_none)
 #define FEATURE_BOARD_WIDGET			(features[feature_board_index] == (uint8_t)feature_board_widget)
@@ -278,6 +294,9 @@ extern const features_t features_default;
 #ifndef FEATURE_QUIRK_DEFAULT
 #error "FEATURE_QUIRK_DEFAULT must be defined by the Makefile"
 #endif
+#ifndef FEATURE_XTAL_CL_DEFAULT
+#error "FEATURE_XTAL_CL_DEFAULT must be defined by the Makefile"
+#endif
 
 #define FEATURES_DEFAULT FEATURE_MAJOR_DEFAULT,		\
 		FEATURE_MINOR_DEFAULT,						\
@@ -290,7 +309,8 @@ extern const features_t features_default;
 		FEATURE_LCD_DEFAULT,						\
 		FEATURE_LOG_DEFAULT,						\
 		FEATURE_FILTER_DEFAULT,						\
-		FEATURE_QUIRK_DEFAULT
+		FEATURE_QUIRK_DEFAULT,                      \
+		FEATURE_XTAL_CL_DEFAULT
 
 extern const char * const feature_value_names[];
 extern const char * const feature_index_names[];

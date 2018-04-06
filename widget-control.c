@@ -384,6 +384,7 @@ void print_all_features(uint8_t *fp) {
 	fprintf(stdout, "%d %d", fp[true_feature_major_index], fp[true_feature_minor_index]);
 	for (j = true_feature_minor_index+1; j < true_feature_end_index; j += 1) {
 		fprintf(stdout, " %s", true_feature_value_names[fp[j]]);
+//		fprintf(stdout, " 0x%02x", fp[j]);
 	}
 	fprintf(stdout, "\n");
 }

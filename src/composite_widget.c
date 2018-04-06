@@ -356,6 +356,17 @@ int main(void)
 
 	gpio_clr_gpio_pin(AVR32_PIN_PX52);						// Not used in QNKTC / Henry Audio hardware
 
+	// Initialize interrupt controller
+	print_dbg("Initializing interrupts\r\n");
+	INTC_init_interrupts();
+
+	#if I2C
+		// Create I2C comms semaphore
+		mutexI2C = xSemaphoreCreateMutex();
+		twi_init();
+	#endif
+
+
 
 // Get going from known default state.
 // It is very important to enable some sort of MCLK to the CPU, USB MCLK is the most reliable
@@ -428,15 +439,15 @@ int main(void)
 	if (FEATURE_FILTER_FIR) gpio_clr_gpio_pin(GPIO_PCM5102_FILTER);
 	else gpio_set_gpio_pin(GPIO_PCM5102_FILTER);
 
-	// Initialize interrupt controller
-	print_dbg("Initializing interrupts\r\n");
-	INTC_init_interrupts();
-
-	#if I2C
-		// Create I2C comms semaphore
-		mutexI2C = xSemaphoreCreateMutex();
-		twi_init();
-	#endif
+//	// Initialize interrupt controller
+//	print_dbg("Initializing interrupts\r\n");
+//	INTC_init_interrupts();
+//
+//	#if I2C
+//		// Create I2C comms semaphore
+//		mutexI2C = xSemaphoreCreateMutex();
+//		twi_init();
+//	#endif
 
 	//	mobo_xo_select(FREQ_44, input_select);					// Initial GPIO XO control and frequency indication
 	mobo_xo_select(FREQ_INVALID, input_select);				// Initial GPIO XO control and frequency indication

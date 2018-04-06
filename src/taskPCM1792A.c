@@ -294,10 +294,9 @@ void PCM1792A_task_init(const Bool uac1) {
 	print_dbg("Configuring PCM1792\r\n");
 	pcm1792_set_atld(PCM1792A_ATLD_ENABLED);
 
-	//spk_vol_usb_L = usb_volume_flash(CH_LEFT, 0, VOL_READ);
-	//spk_vol_usb_R = usb_volume_flash(CH_RIGHT, 0, VOL_READ);
-	spk_vol_usb_L = eeprom_get16(eeprom_entry_volume_left);
-	spk_vol_usb_R = eeprom_get16(eeprom_entry_volume_right);
+#ifdef EXTERNAL_EEPROM
+	spk_vol_usb_L = usb_volume_flash(CH_LEFT, 0, VOL_READ);
+	spk_vol_usb_R = usb_volume_flash(CH_RIGHT, 0, VOL_READ);
 	if (spk_vol_usb_L > VOL_MAX || spk_vol_usb_L < VOL_MIN)
 	{
 		spk_vol_usb_L = VOL_DEFAULT;
@@ -306,6 +305,7 @@ void PCM1792A_task_init(const Bool uac1) {
 	{
 		spk_vol_usb_R = VOL_DEFAULT;
 	}
+#endif
 	uint8_t vol_l = usb_vol_to_pcm1792_atten(spk_vol_usb_L);
 	uint8_t vol_r = usb_vol_to_pcm1792_atten(spk_vol_usb_R);
 	pcm1792_set_volume_left(vol_l);
@@ -435,28 +435,30 @@ void pcm1792a_task(void)
 				dirty = true;
 			}
 		}
+#ifdef EXTERNAL_EEPROM
 		else
 		{
 			/* XXX: This will never work. We can't handle interrupts while we're
 			   writing to flash, since the code is to be executed from flash, which
 			   will now be unavailable. */
 			/* Doing this in an external EEPROM now. */
-			//if (spk_vol_usb_L != usb_volume_flash(CH_LEFT, 0, VOL_READ))
-			if (dirty && spk_vol_usb_L != (S16) eeprom_get16(eeprom_entry_volume_left))
+			//if (dirty && spk_vol_usb_L != (S16) eeprom_get16(feature_msb_vol_L))
+			if (dirty && spk_vol_usb_L != usb_volume_flash(CH_LEFT, 0, VOL_READ))
 			{
-				//print_dbg("Saving left channel volume to EEPROM\r\n");
-				//usb_volume_flash(CH_LEFT, spk_vol_usb_L, VOL_WRITE);
-				eeprom_put16(eeprom_entry_volume_left, spk_vol_usb_L);
+				print_dbg("Saving left channel volume to EEPROM\r\n");
+				usb_volume_flash(CH_LEFT, spk_vol_usb_L, VOL_WRITE);
+				//eeprom_put16(eeprom_entry_volume_left, spk_vol_usb_L);
 			}
-			//if (spk_vol_usb_R != usb_volume_flash(CH_RIGHT, 0, VOL_READ))
-			if (dirty && spk_vol_usb_R != (S16) eeprom_get16(eeprom_entry_volume_right))
+			//if (dirty && spk_vol_usb_R != (S16) eeprom_get16(feature_msb_vol_R))
+			if (dirty && spk_vol_usb_R != usb_volume_flash(CH_RIGHT, 0, VOL_READ))
 			{
-				//print_dbg("Saving right channel volume to EEPROM\r\n");
-				//usb_volume_flash(CH_RIGHT, spk_vol_usb_R, VOL_WRITE);
-				eeprom_put16(eeprom_entry_volume_right, spk_vol_usb_R);
+				print_dbg("Saving right channel volume to EEPROM\r\n");
+				usb_volume_flash(CH_RIGHT, spk_vol_usb_R, VOL_WRITE);
+				//eeprom_put16(eeprom_entry_volume_right, spk_vol_usb_R);
 			}
 
 			dirty = false;
 		}
+#endif
 	}
 }

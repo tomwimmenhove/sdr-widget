@@ -19,6 +19,6 @@
 #define BOARD SDRwdgtLite
 #define FREERTOS_USED
 #define USBHID
-
+#define EXTERNAL_EEPROM
 
 #endif // DEFINEHELPER

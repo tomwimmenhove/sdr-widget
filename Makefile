@@ -60,6 +60,7 @@ AUDIO_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_usbi2s \
 	-DFEATURE_LOG_DEFAULT=feature_log_none \
 	-DFEATURE_FILTER_DEFAULT=feature_filter_fir \
 	-DFEATURE_QUIRK_DEFAULT=feature_quirk_ptest \
+	-DFEATURE_XTAL_CL_DEFAULT=SI5351A_XTAL_CL10PF \
 	-DFEATURE_PRODUCT_NBSDAC \
 	-DVDD_SENSE \
 	-DFEATURE_VOLUME_CTRL \
@@ -67,6 +68,7 @@ AUDIO_WIDGET_DEFAULTS=-DFEATURE_BOARD_DEFAULT=feature_board_usbi2s \
 	-DNBSDAC \
 	-DUSBHID \
 	-DMONITOR_TASK \
+	-DEXTERNAL_EEPROM \
 	-DI2C
 
 #	-DFEATURE_PRODUCT_AB1x \
@@ -124,7 +126,7 @@ sdr-widget::
 	CFLAGS="$(SDR_WIDGET_DEFAULTS)" ./make-widget
 
 widget-control: widget-control.c src/features.h
-	gcc $(AUDIO_WIDGET_DEFAULTS) -o widget-control widget-control.c -lusb-1.0
+	gcc $(AUDIO_WIDGET_DEFAULTS) -o widget-control widget-control.c -lusb-1.0 -ggdb
 
 clean::
 	rm -f widget-control widget-control.exe

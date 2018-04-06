@@ -29,7 +29,7 @@ uint8_t eeprom_read(uint16_t word_address, uint8_t* data, uint8_t len)
 	return twi_read_in(EEPROM_I2C_GET_ADDR(word_address), data, len);
 }
 
-uint8_t eeprom_write(uint16_t word_address, uint8_t* data, uint8_t len)
+uint8_t eeprom_write_page(uint16_t word_address, uint8_t* data, uint8_t len)
 {
 	uint8_t d[len + 1];
 	d[0] = word_address & 0xff;
@@ -38,4 +38,24 @@ uint8_t eeprom_write(uint16_t word_address, uint8_t* data, uint8_t len)
 	twi_write_out(EEPROM_I2C_GET_ADDR(word_address), d, len + 1);
 
 	return eeprom_wait_for_ack(word_address);
+}
+
+uint8_t eeprom_write(uint16_t word_address, uint8_t* data, uint8_t len)
+{
+    while (len > 0)
+    {
+    	int l = len > EEPROM_PAGE_SIZE ? EEPROM_PAGE_SIZE : len;
+
+    	uint8_t ret = eeprom_write_page(word_address, data, l);
+    	if (ret != 0)
+    	{
+    		return ret;
+    	}
+
+    	len -= l;
+    	word_address += l;
+    	data += l;
+    }
+
+    return 0;
 }
