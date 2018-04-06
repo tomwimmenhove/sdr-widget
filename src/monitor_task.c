@@ -48,8 +48,8 @@ __attribute__((__interrupt__)) static void usart_int_handler(void)
 			{
 				print_dbg_char(ch);
 				line_buffer_pos--;
-				return;
 			}
+			return;
 		}
 
 		// Enter
