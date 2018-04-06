@@ -9,7 +9,6 @@
 #define EEPROM_PAGE_SIZE			8
 
 uint8_t eeprom_read(uint16_t word_address, uint8_t* data, uint8_t len);
-uint8_t eeprom_write_page(uint16_t word_address, uint8_t* data, uint8_t len);
 uint8_t eeprom_write(uint16_t word_address, uint8_t* data, uint8_t len);
 void eeprom_test();
 
