@@ -294,7 +294,6 @@ void setup() {
 		if (res == 1)
 		{
 			true_feature_end_index = usb_data[0];
-			printf("true_feature_end_index: %d\n", true_feature_end_index);
 		}
 		else {
 			fprintf(stderr, "unable to read true feature_end_index\n");
@@ -304,7 +303,6 @@ void setup() {
 		if (res == 1)
 		{
 			true_feature_end_values = usb_data[0];
-			printf("true_feature_end_values: %d\n", true_feature_end_values);
 		}
 		else {
 			fprintf(stderr, "unable to read true feature_end_values\n");

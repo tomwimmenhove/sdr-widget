@@ -125,11 +125,12 @@ typedef enum {
 	feature_quirk_fb_Hstupid,	// BSB 20131101 emaulate stupid feedback system at Host
 	feature_quirk_fb_Hdead,		// BSB 20131101 emaulate stupid feedback system at Host
 	feature_quirk_fb_noskip,	// BSB 20131101 disable (future) skip/insert system
+	feature_end_quirk,			// BSB 20131101 renamed "lquirk" to "quirk"
 	feature_xtal_cl_0pf,
 	feature_xtal_cl_6pf,
 	feature_xtal_cl_8pf,
 	feature_xtal_cl_10pf,
-	feature_end_quirk,			// BSB 20131101 renamed "lquirk" to "quirk"
+	feature_end_xtal_cl,
 	feature_end_values			// end
 } feature_values_t;
 
@@ -173,6 +174,7 @@ typedef enum {
 		"quirk_fb_Hstupid",												\
 		"quirk_fb_Hdead",												\
 		"quirk_fb_noskip",												\
+		"end",															\
 		"xtal_cl_0pf",													\
 		"xtal_cl_6pf",													\
 		"xtal_cl_8pf",													\
