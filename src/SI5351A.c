@@ -40,5 +40,20 @@ void SI5351A_set_regs_preset(int preset)
 		break;
 	}
 
-	SI5351A_write_register(SI5351A_XTAL_CL_REG, FEATURE_XTAL_CL);
+	//SI5351A_write_register(SI5351A_XTAL_CL_REG, FEATURE_XTAL_CL);
+	switch (FEATURE_XTAL_CL)
+	{
+	case feature_xtal_cl_0pf:
+		SI5351A_write_register(SI5351A_XTAL_CL_REG, SI5351A_XTAL_CL0PF);
+		break;
+	case feature_xtal_cl_6pf:
+		SI5351A_write_register(SI5351A_XTAL_CL_REG, SI5351A_XTAL_CL6PF);
+		break;
+	case feature_xtal_cl_8pf:
+		SI5351A_write_register(SI5351A_XTAL_CL_REG, SI5351A_XTAL_CL8PF);
+		break;
+	case feature_xtal_cl_10pf:
+		SI5351A_write_register(SI5351A_XTAL_CL_REG, SI5351A_XTAL_CL10PF);
+		break;
+	}
 }

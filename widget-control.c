@@ -292,14 +292,20 @@ void setup() {
 		// read out the widget's major and minor version numbers
 		int i, j, res = device_to_host(FEATURE_DG8SAQ_COMMAND, FEATURE_DG8SAQ_GET_NVRAM, true_feature_major_index, 8);
 		if (res == 1)
+		{
 			true_feature_end_index = usb_data[0];
+			printf("true_feature_end_index: %d\n", true_feature_end_index);
+		}
 		else {
 			fprintf(stderr, "unable to read true feature_end_index\n");
 			exit(finish(1));
 		}
 		res = device_to_host(FEATURE_DG8SAQ_COMMAND, FEATURE_DG8SAQ_GET_NVRAM, true_feature_minor_index, 8);
 		if (res == 1)
+		{
 			true_feature_end_values = usb_data[0];
+			printf("true_feature_end_values: %d\n", true_feature_end_values);
+		}
 		else {
 			fprintf(stderr, "unable to read true feature_end_values\n");
 			exit(finish(1));
@@ -377,15 +383,24 @@ int get_all_devices() {
 	return finish(0);
 }
 
-char* feature_name(char* buf, int nbuf, int feature)
+char* feature_name(char* buf, int nbuf, int index, int feature)
 {
-	if (feature < feature_end_values)
+	char* feature_name = true_feature_index_names[index];
+	int slen = strlen(feature_name);
+	
+	if (feature_name[slen-1] == '#')
 	{
-		return true_feature_value_names[feature];
+		snprintf(buf, nbuf, "%d", feature);
+		return buf;
 	}
-	snprintf(buf, nbuf, "%d", feature);
 
-	return buf;
+	if (feature > feature_end_values)
+	{
+		snprintf(buf, nbuf, "Unknwon(%d)", feature);
+		return buf;
+	}
+
+	return true_feature_value_names[feature];
 }
 
 /*
@@ -395,10 +410,12 @@ void print_all_features(uint8_t *fp) {
 	int j;
 	char buf[256];
 	fprintf(stdout, "%d %d", fp[true_feature_major_index], fp[true_feature_minor_index]);
-	for (j = true_feature_minor_index+1; j < true_feature_end_index; j += 1) {
-		fprintf(stdout, " %s", feature_name(buf, sizeof(buf), fp[j]));
+	for (j = true_feature_minor_index+1; j < true_feature_end_index; j += 1)
+	{
+//		fprintf(stdout, " %s", feature_name(buf, sizeof(buf), fp[j]));
+		fprintf(stdout, "%s: %s\n", true_feature_index_names[j], feature_name(buf, sizeof(buf), j, fp[j]));
 	}
-	fprintf(stdout, "\n");
+	//fprintf(stdout, "\n");
 }
 
 void list_all_features() {

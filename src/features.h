@@ -57,11 +57,11 @@ typedef enum {
 		"log",										\
 		"filter",									\
 		"quirk",									\
-		"xtal_cl"									\
-		"msb_vol_L",								\
-		"lsb_vol_L",								\
-		"msb_vol_R",								\
-		"lsb_vol_R",								\
+		"xtal_cl",									\
+		"msb_vol_L#",								\
+		"lsb_vol_L#",								\
+		"msb_vol_R#",								\
+		"lsb_vol_R#",								\
 		"end"
 
 //
@@ -125,6 +125,10 @@ typedef enum {
 	feature_quirk_fb_Hstupid,	// BSB 20131101 emaulate stupid feedback system at Host
 	feature_quirk_fb_Hdead,		// BSB 20131101 emaulate stupid feedback system at Host
 	feature_quirk_fb_noskip,	// BSB 20131101 disable (future) skip/insert system
+	feature_xtal_cl_0pf,
+	feature_xtal_cl_6pf,
+	feature_xtal_cl_8pf,
+	feature_xtal_cl_10pf,
 	feature_end_quirk,			// BSB 20131101 renamed "lquirk" to "quirk"
 	feature_end_values			// end
 } feature_values_t;
@@ -169,6 +173,10 @@ typedef enum {
 		"quirk_fb_Hstupid",												\
 		"quirk_fb_Hdead",												\
 		"quirk_fb_noskip",												\
+		"xtal_cl_0pf",													\
+		"xtal_cl_6pf",													\
+		"xtal_cl_8pf",													\
+		"xtal_cl_10pf",													\
 		"end",															\
 		"end"
 	
@@ -204,6 +212,11 @@ extern const features_t features_default;
 #endif
 
 #define FEATURE_XTAL_CL					(features[feature_xtal_cl])
+
+#define FEATURE_XTAL_CL_0PF				(features[feature_xtal_cl] == (uint8_t)feature_xtal_cl_0pf)
+#define FEATURE_XTAL_CL_6PF				(features[feature_xtal_cl] == (uint8_t)feature_xtal_cl_6pf)
+#define FEATURE_XTAL_CL_8PF				(features[feature_xtal_cl] == (uint8_t)feature_xtal_cl_8pf)
+#define FEATURE_XTAL_CL_10PF			(features[feature_xtal_cl] == (uint8_t)feature_xtal_cl_10pf)
 
 #define FEATURE_BOARD_NONE				(features[feature_board_index] == (uint8_t)feature_board_none)
 #define FEATURE_BOARD_WIDGET			(features[feature_board_index] == (uint8_t)feature_board_widget)
