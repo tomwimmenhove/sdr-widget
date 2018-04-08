@@ -19,11 +19,11 @@ const char usage[] = {
 	"         -l = list the possible feature values.\n"
 	"         -m = get the feature values from the widget ram.\n"
 	"         -r = reboot the widget.\n"
-	"         -s = set the feature values in the widget nvram.\n"
-	"         -u serialId = open the device with the specified serialId.\n"
+//	"         -s = set the feature values in the widget nvram.\n"
+	"         -f <feature name> <feature value> set a feature to a value\n"
+	"         -u <serialId> = open the device with the specified serialId.\n"
 	"         -p = erase flash and reboot into DFU\n"
-	"Only -s and -u take values.\n"
-	"The -s option takes values in the form printed by -d or -g or -m.\n"
+//	"The -s option takes values in the form printed by -d or -g or -m.\n"
 	"The acceptable values for each feature are listed by -l.\n"
 	"The major and minor version numbers are optional to -s, but\n"
 	"if provided they must match the ones printed by -d, -g, -l, and -m,\n"
@@ -519,6 +519,45 @@ int set_nvram(int argc, char *argv[]) {
 	return finish(0);
 }
 
+int get_from_string(char** string_list, char* s, int start, int end)
+{
+	int i;
+	for (i = start; i < end; i ++)
+	{
+		if (strcmp(s, string_list[i]) == 0)
+		{
+			return i;
+		}  
+	}
+
+	return atoi(s);
+}
+
+
+int set_singlenvram(int argc, char *argv[])
+{
+	char *feature = argv[0];
+	char *value = argv[1];
+
+	setup();
+
+	int feature_index = get_from_string(true_feature_index_names, feature, 1, true_feature_end_index);
+	int value_index = get_from_string(true_feature_value_names, value, 0, true_feature_end_values);
+
+	printf("Setting feature \"%s\"(%d) to \"%s\"(%d)\n", feature, feature_index, value, value_index);
+
+	int res = device_to_host(FEATURE_DG8SAQ_COMMAND, FEATURE_DG8SAQ_SET_NVRAM, feature_index | (value_index << 8), 8);
+	if (res != 1)
+	{
+		fprintf(stderr, "widget-control: device_to_host(FEATURE_DG8SAQ_COMMAND, FEATURE_DG8SAQ_SET_NVRAM, %d | (%d << 8), 8) returned %s?\n",
+				feature_index, value_index, error_string(res));
+		return 1;
+	}
+
+
+	return 0;
+}
+
 int reset_widget() {
 	setup();
 	int res = device_to_host(WIDGET_RESET, 0, 0, 8);
@@ -566,6 +605,9 @@ int main(int argc, char *argv[]) {
 		}
 		if (strcmp(argv[i], "-s") == 0) { // set feature(s)
 			exit(set_nvram(argc-i-1, argv+i+1));
+		}
+		if (strcmp(argv[i], "-f") == 0) { // set feature(s)
+			exit(set_singlenvram(argc-i-1, argv+i+1));
 		}
 		if (strcmp(argv[i], "-m") == 0) { // get feature(s) from memory
 			exit(get_mem());
